@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ô chữ ghép dọc — kiểu Olympia</title>
+  <style>
+    :root{
+      --bg:#0b1224; --panel:#0f172a; --muted:#94a3b8; --text:#e5e7eb;
+      --line:#1f2a44; --accent:#22d3ee; --accent2:#a78bfa; --ok:#22c55e; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:radial-gradient(1200px 600px at 70% -10%, #172554 0%, #0b1224 40%, var(--bg) 100%); color:var(--text); display:flex; align-items:center; justify-content:center; padding:20px}
+    .app{width:min(1100px,100%)}
+    h1{margin:0 0 10px; font-size:clamp(22px,2.6vw,34px)}
+
+    .grid{display:grid; grid-template-columns: 1fr 260px; gap:16px}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+
+    .panel{background:linear-gradient(180deg, #0d1427, #0b1224); border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:0 10px 24px #0007}
+    .panel h2{margin:.2rem 0 .8rem; font-size:18px; color:#cbd5e1}
+
+    .rows{display:grid; gap:10px}
+    .row{display:grid; grid-template-columns: 110px 1fr; gap:10px; align-items:center; padding:10px; border:1px dashed #24304f; border-radius:14px}
+    .row.solved{border-style:solid}
+    .row .left{display:flex; align-items:center; gap:8px}
+    .row .btn{padding:8px 10px; border:1px solid #2a3557; border-radius:10px; background:transparent; color:#a5b4fc; cursor:pointer}
+    .row .btn:hover{border-color:#475569}
+
+    .cells{display:flex; flex-wrap:wrap; gap:6px}
+    .cell{width:32px; height:40px; border-radius:10px; border:1px solid #2a3557; display:grid; place-items:center; background:#0a1122; font-weight:800; letter-spacing:.06em; font-size:18px}
+    .cell.gap{opacity:.3; border-style:dotted; width:12px}
+    .cell.pivot{box-shadow:0 0 0 2px var(--accent) inset}
+    .cell.revealed{background:linear-gradient(180deg,#13203e,#101a33); border-color:#475569}
+
+    .acrostic{display:grid; grid-template-columns: repeat(auto-fit,minmax(46px,1fr)); gap:8px}
+    .acrostic .slot{aspect-ratio:1/1; width:46px; border-radius:12px; border:1px solid #2a3557; display:grid; place-items:center; background:#0a1122; font-weight:800; font-size:20px; margin:auto}
+    .acrostic .slot.ready{box-shadow:0 0 0 2px var(--accent2) inset}
+
+    .play{margin-top:14px; display:grid; gap:8px}
+    input[type="text"]{background:#0a1122; color:var(--text); border:1px solid #1f2a44; border-radius:12px; padding:10px 12px; outline:none; font-size:14px}
+    button.primary{background:linear-gradient(180deg,#0ea5e9,#22d3ee); color:#051018; border:none; border-radius:12px; padding:9px 12px; font-weight:700; cursor:pointer}
+    button.secondary{background:transparent; color:#a5b4fc; border:1px solid #2f3a5c; border-radius:12px; padding:9px 12px; font-weight:700; cursor:pointer}
+    .msg{font-size:13px; color:var(--muted)}
+
+    .qa{margin-top:12px; display:none}
+    .qa.active{display:block}
+    .qa .q{padding:10px 12px; border:1px solid #2a3557; border-radius:12px; background:#0a1122}
+
+    .footer{margin-top:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; color:#94a3b8; font-size:12px}
+    .shake{animation:shake .3s ease}
+    @keyframes shake{ 20%{transform:translateX(-3px)} 50%{transform:translateX(3px)} 100%{transform:translateX(0)} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Ô chữ ghép dọc — kiểu Olympia</h1>
+    <div class="grid">
+      <section class="panel">
+        <h2>Hàng ngang (trả lời để mở chữ)</h2>
+        <div id="rows" class="rows"></div>
+        <div id="qa" class="qa panel" style="margin-top:10px">
+          <div id="qtext" class="q"></div>
+          <div class="play">
+            <div style="display:flex; gap:8px">
+              <input id="answer" type="text" placeholder="Nhập đáp án cho hàng đang chọn... (không dấu cũng được)" />
+              <button id="btnCheck" class="primary">Kiểm tra</button>
+              <button id="btnClose" class="secondary">Đóng</button>
+            </div>
+            <div id="feedback" class="msg"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Chữ ghép dọc (từ khóa)</h2>
+        <div id="acro" class="acrostic"></div>
+        <div class="play">
+          <input id="finalGuess" type="text" placeholder="Đoán từ khóa (ghép dọc)..." />
+          <button id="btnFinal" class="primary">Đoán từ khóa</button>
+          <div id="finalMsg" class="msg">Mỗi hàng đúng sẽ hé lộ 1 chữ tương ứng với từ khóa.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">
+      <div><b>Mẹo:</b> Chọn vào hàng để hiện câu hỏi. Trả lời đúng sẽ hiện cả hàng và lấy 1 chữ (ô viền sáng) để ghép dọc thành từ khóa.</div>
+      <div><button id="btnRestart" class="secondary">Chơi lại</button></div>
+    </div>
+  </div>
+
+<script>
+// ===== CẤU HÌNH DỮ LIỆU =====
+// Lưu ý: Số hàng ngang nên bằng số ký tự của keyword (sau khi bỏ dấu & khoảng trắng)
+const DATA = {
+  keyword: "OLYMPIA", // TỪ KHÓA CỐ ĐỊNH để kiểm tra khi người chơi đoán sớm
+  clues: [
+    { q: "Một vòng thi nổi tiếng trong chương trình Olympia?",
+      a: "VUOT CHUONG NGAI VAT",
+      pick: 2 // V(0)U(1)O(2)... => lấy 'O'
+    },
+    { q: "Chữ cái thứ 12 trong bảng chữ cái tiếng Anh?",
+      a: "L",
+      pick: 0
+    },
+    { q: "Ký hiệu hoá học của Yttrium?",
+      a: "Y",
+      pick: 0
+    },
+    { q: "Chữ cái đầu của từ 'Mountain'?",
+      a: "M",
+      pick: 0
+    },
+    { q: "Chữ cái đầu của từ 'Physics'?",
+      a: "P",
+      pick: 0
+    },
+    { q: "Chữ cái thứ 9 trong bảng chữ cái tiếng Anh?",
+      a: "I",
+      pick: 0
+    },
+    { q: "Chữ cái đầu của từ 'Alphabet'?",
+      a: "A",
+      pick: 0
+    },
+  ],
+};
+
+// ===== TIỆN ÍCH =====
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function normalizeVN(str){
+  return (str||'')
+    .toUpperCase()
+    .normalize('NFD').replace(/\p{Diacritic}/gu,'')
+    .replace(/Đ/g,'D')
+}
+function stripSpaces(s){ return (s||'').replace(/\s+/g,''); }
+function keyNormalized(){
+  return stripSpaces(normalizeVN(DATA.keyword||''));
+}
+
+// ===== TRẠNG THÁI =====
+let currentRow = null; // index hàng đang mở Q&A
+let solved = new Set();
+let acroLetters = [];
+
+// ===== RENDER =====
+function build(){
+  const rows = $('#rows');
+  rows.innerHTML = '';
+  DATA.clues.forEach((clue, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.dataset.idx = idx;
+
+    const left = document.createElement('div');
+    left.className = 'left';
+    left.innerHTML = `<button class="btn" data-open="${idx}">Câu ${idx+1}</button>`;
+
+    const cells = document.createElement('div');
+    cells.className = 'cells';
+
+    const letters = stripSpaces(normalizeVN(clue.a));
+    for(let i=0;i<letters.length;i++){
+      const span = document.createElement('div');
+      span.className = 'cell';
+      span.dataset.col = i;
+      if(i===clue.pick) span.classList.add('pivot');
+      span.textContent = '•';
+      cells.appendChild(span);
+    }
+
+    row.appendChild(left);
+    row.appendChild(cells);
+    rows.appendChild(row);
+  });
+
+  // acrostic slots
+  const acro = $('#acro');
+  acro.innerHTML = '';
+  const targetLen = keyNormalized().length || DATA.clues.length; // ưu tiên độ dài keyword
+  acroLetters = Array(targetLen).fill('?');
+  for(let i=0;i<targetLen;i++){
+    const s = document.createElement('div');
+    s.className = 'slot';
+    s.dataset.row = i;
+    s.textContent = '?';
+    acro.appendChild(s);
+  }
+
+  // nếu số hàng khác độ dài keyword → cảnh báo nhẹ
+  const msg = $('#finalMsg');
+  if (DATA.keyword && DATA.clues.length !== targetLen){
+    msg.textContent = `Lưu ý: Có ${DATA.clues.length} hàng nhưng keyword dài ${targetLen} ký tự.`;
+  }
+}
+
+// ===== Q&A =====
+function openQA(idx){
+  currentRow = idx;
+  $('#qa').classList.add('active');
+  $('#qtext').textContent = DATA.clues[idx].q;
+  $('#answer').value = '';
+  $('#feedback').textContent = '';
+  $('#answer').focus();
+}
+
+function checkAnswer(){
+  if(currentRow===null) return;
+  const clue = DATA.clues[currentRow];
+  const user = normalizeVN($('#answer').value).trim();
+  if(!user){ $('#feedback').textContent='Hãy nhập đáp án nhé!'; return; }
+  const ok = stripSpaces(user) === stripSpaces(normalizeVN(clue.a));
+  if(ok){
+    revealRow(currentRow);
+    $('#feedback').textContent = 'Chính xác! Hàng đã mở.';
+  }else{
+    $('#feedback').textContent = 'Chưa đúng, thử lại!';
+    $('#answer').classList.add('shake'); setTimeout(()=>$('#answer').classList.remove('shake'),320);
+  }
+}
+
+function revealRow(idx){
+  const row = $(`.row[data-idx="${idx}"]`);
+  if(!row) return;
+  const cells = row.querySelectorAll('.cell');
+  const letters = stripSpaces(normalizeVN(DATA.clues[idx].a));
+  cells.forEach((c,i)=>{ c.textContent = letters[i]; c.classList.add('revealed'); });
+  row.classList.add('solved');
+  solved.add(idx);
+  // cập nhật chữ ghép dọc: chỉ khi còn trong phạm vi số slot
+  const slots = $$('#acro .slot');
+  if (idx < slots.length){
+    const pivotChar = letters[DATA.clues[idx].pick] || '?';
+    acroLetters[idx] = pivotChar;
+    const slot = slots[idx];
+    slot.textContent = pivotChar; slot.classList.add('ready');
+  }
+}
+
+function restart(){
+  currentRow = null; solved = new Set();
+  build(); $('#qa').classList.remove('active'); $('#finalGuess').value=''; $('#finalMsg').textContent='Mỗi hàng đúng sẽ hé lộ 1 chữ tương ứng với từ khóa.';
+}
+
+// ===== TỪ KHOÁ GHÉP DỌC =====
+function guessFinal(){
+  const guess = stripSpaces(normalizeVN($('#finalGuess').value));
+  if(!guess){ $('#finalMsg').textContent = 'Nhập từ khóa cần đoán nhé!'; return; }
+
+  const target = keyNormalized();
+  if (target){
+    // So với keyword cố định → cho phép đoán sớm
+    if(guess === target){
+      fillKeyword(target);
+      $('#finalMsg').textContent = 'Tuyệt vời! Bạn đã đoán đúng từ khóa: ' + DATA.keyword;
+      celebrate();
+    } else {
+      $('#finalMsg').textContent = 'Chưa đúng. Thử lại nhé!';
+    }
+  } else {
+    // Không cấu hình keyword → fallback so với chữ đang mở
+    const current = acroLetters.join('');
+    if(guess === current){
+      $('#finalMsg').textContent = 'Đúng theo các chữ đã mở!';
+      celebrate();
+    } else {
+      $('#finalMsg').textContent = 'Chưa đúng. Hãy mở thêm hàng để có nhiều chữ hơn!';
+    }
+  }
+}
+
+function fillKeyword(target){
+  const slots = $$('#acro .slot');
+  const L = Math.min(target.length, slots.length);
+  for(let i=0;i<L;i++){
+    slots[i].textContent = target[i];
+    slots[i].classList.add('ready');
+    acroLetters[i] = target[i];
+  }
+}
+
+function celebrate(){
+  const confetti = document.createElement('div');
+  confetti.style.position='fixed'; confetti.style.inset='0'; confetti.style.pointerEvents='none';
+  confetti.innerHTML = `<svg width="100%" height="100%" preserveAspectRatio="none">
+      ${[...Array(80)].map(()=>{ const x=Math.random()*100,d=6+Math.random()*10,dur=2+Math.random()*1.8; return `<rect x="${x}%" y="-10" width="${d}" height="${d}" rx="2" ry="2" fill="url(#g)" style="animation:f ${dur}s linear forwards; opacity:.9"/>`; }).join('')}
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient>
+      </defs>
+      <style>@keyframes f{to{transform:translateY(110vh) rotate(360deg)}}</style>
+    </svg>`;
+  document.body.appendChild(confetti); setTimeout(()=>confetti.remove(),3200);
+}
+
+// ===== SỰ KIỆN =====
+$('#rows').addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-open]');
+  if(btn){ openQA(+btn.dataset.open); }
+});
+$('#btnCheck').addEventListener('click', checkAnswer);
+$('#answer').addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer(); });
+$('#btnClose').addEventListener('click', ()=>{ $('#qa').classList.remove('active'); currentRow=null; });
+$('#btnRestart').addEventListener('click', restart);
+$('#btnFinal').addEventListener('click', guessFinal);
+
+// ===== START =====
+build();
+</script>
+</body>
+</html>

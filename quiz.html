@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Quiz QĐNDVN — App</title>
+<style>
+:root{--text:#e8f2ff;--muted:#a9c3e6;--accent:#2ad19f;--accent2:#3aa1ff;--gold:#ffd54d;--danger:#ff5d5d;--ok:#22c55e;--overlay:#0007}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background-size:cover;background-position:left top;background-repeat:no-repeat;display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--text)}
+.app{width:min(760px,100%);background:rgba(10,25,50,.92);border-radius:18px;backdrop-filter:blur(8px);box-shadow:0 8px 40px var(--overlay);padding:16px;position:relative}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{margin:0;font-size:clamp(18px,5vw,26px);letter-spacing:.3px}
+.logo{width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 4px 14px #0006;border:2px solid #2e8cff}
+.badge{padding:6px 10px;border:1px solid #1e3a66;border-radius:999px;color:var(--muted);font-size:12px}
+.card{position:relative;background:linear-gradient(180deg,rgba(20,40,70,.9),rgba(10,20,40,.95));border:1px solid #2e4a75;border-radius:16px;padding:16px;box-shadow:0 12px 36px #000a;overflow:hidden}
+.decor{position:absolute;inset:0;pointer-events:none;opacity:.1;background-size:contain;background-repeat:no-repeat;background-position:center}
+.progress{height:10px;background:#0a2748;border-radius:999px;overflow:hidden;margin-bottom:12px}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s ease}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{padding:6px 10px;border:1px solid #1b3c69;border-radius:10px;color:var(--muted);font-size:12px}
+.q{font-size:clamp(18px,4.8vw,22px);font-weight:800;line-height:1.35;margin:10px 0 12px}
+.ops{display:grid;gap:10px}
+.btn{appearance:none;-webkit-tap-highlight-color:transparent;cursor:pointer;border:none;color:var(--text);background:linear-gradient(180deg,#0e315a,#0a2a4a);border:1px solid #1e406e;padding:14px 12px;border-radius:14px;text-align:left;font-weight:700;font-size:16px;transition:transform .06s ease,background .2s ease,border-color .2s ease;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.btn:active{transform:scale(.98)}.btn:hover{border-color:#2b5aa0}
+.letter{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#0f3a6a;font-weight:900;color:#c9e4ff}
+.btn.correct{border-color:#0f8f4f;background:linear-gradient(180deg,#0d3e2a,#0b3323)}
+.btn.wrong{border-color:#9c1b1b;background:linear-gradient(180deg,#3a0d0d,#2d0909)}
+.btn.correct .letter{background:#165a3e;color:#e8ffe8}
+.btn.wrong .letter{background:#5a1616;color:#ffd7d7}
+.actions{display:flex;gap:10px;margin-top:12px}
+.primary{background:linear-gradient(180deg,var(--accent2),#2e90ff);color:#041527;border:none;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer;flex:1}
+.ghost{background:transparent;border:1px solid #2a4f88;color:#b7d4ff;border-radius:12px;padding:12px 14px;font-weight:700}
+.result{display:none;text-align:center}
+.result h2{margin:.3rem 0 .6rem}
+.scoreBig{font-size:40px;font-weight:900}
+.stars{display:flex;justify-content:center;gap:4px;margin:8px 0 12px}
+.star{width:22px;height:22px}
+.ctaStart{display:grid;gap:14px;place-items:center;padding:28px}
+.startbtn{background:linear-gradient(180deg,#2ad19f,#20c997);border:none;border-radius:14px;color:#062234;font-weight:900;padding:14px 18px;cursor:pointer}
+.mobilehint{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+@media(max-width:420px){.btn{padding:12px}.letter{width:26px;height:26px}.header{gap:8px}.logo{width:44px;height:44px}}.letter{width:26px;height:26px}.header{gap:8px}}
+</style>
+</head>
+<body style="background-image:url('backgrounddoanthanhnien.jpg');">
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <img src="logothanhnienquandoi.jpg" alt="Thanh niên Quân đội" class="logo"/>
+      <h1>Quiz QĐNDVN — Thanh niên</h1>
+    </div>
+    <div class="badge">HVKTQS</div>
+  </div>
+  <div class="card">
+    <div class="decor" style="background-image:url('backgrounddoanthanhnien.jpg'); filter:blur(0px); opacity:.06;"></div>
+    <div id="splash" class="ctaStart">
+      <div class="pill">10 câu hỏi • 10s mỗi câu</div>
+      <button id="start" class="startbtn">BẮT ĐẦU</button>
+      <div class="mobilehint">Thanh niên xung kích - Tự hào Bộ đội Cụ Hồ</div>
+    </div>
+    <div id="quiz" style="display:none">
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <div class="row"><div class="pill">Câu: <b id="idx">1</b>/10</div><div class="pill">Điểm: <b id="score">0</b></div><div class="pill">Thời gian: <b id="timer">10</b>s</div></div>
+      <div id="question" class="q"></div>
+      <div id="options" class="ops"></div>
+      <div class="actions"><button id="next" class="primary" disabled>Tiếp tục</button><button id="skip" class="ghost">Bỏ qua</button></div>
+    </div>
+    <div id="result" class="result">
+      <h2>Kết quả</h2>
+      <div class="scoreBig"><span id="finalScore">0</span>/10</div>
+      <div id="stars" class="stars"></div>
+      <div class="row" style="justify-content:center"><button id="retry" class="primary" style="max-width:260px">Làm lại</button></div>
+      <div class="row" style="justify-content:center;color:var(--muted)">Thanh niên Việt Nam — Khỏe để dựng xây Tổ quốc</div>
+    </div>
+  </div>
+</div>
+<script>
+const QUESTIONS=[{q:"QĐNDVN được thành lập vào ngày nào?",opts:["02/09/1945","22/12/1944","30/04/1975","19/08/1945"],answer:1},{q:"Tiền thân của QĐNDVN là lực lượng nào?",opts:["Đội Việt Nam Tuyên truyền Giải phóng quân","Vệ quốc đoàn","Cứu quốc quân","Trung đoàn Thủ đô"],answer:0},{q:"Chiến thắng lịch sử năm 1954 làm thay đổi cục diện chiến tranh ở Đông Dương là?",opts:["Chiến dịch Biên giới","Điện Biên Phủ","Chiến dịch Hồ Chí Minh","Quyết chiến Điện Biên"],answer:1},{q:"Quân chủng có nhiệm vụ bảo vệ bầu trời Tổ quốc?",opts:["Hải quân","Phòng không - Không quân","Bộ binh","Biên phòng"],answer:1},{q:"Cơ quan tham mưu chiến lược cao nhất của QĐNDVN là?",opts:["Bộ Tổng Tham mưu","Bộ Quốc phòng","Tổng cục Chính trị","Bộ Tổng cục"],answer:0},{q:"Phẩm chất gắn với 'Bộ đội Cụ Hồ' KHÔNG bao gồm?",opts:["Trung với Đảng, hiếu với dân","Cần, kiệm, liêm, chính","Tận tụy vì nhân dân","Xa rời quần chúng"],answer:3},{q:"Ngày hội Quốc phòng toàn dân?",opts:["22/12","02/09","19/08","01/05"],answer:0},{q:"Cấp bậc quân hàm cao nhất hiện nay?",opts:["Thượng tướng","Đại tướng","Trung tướng","Nguyên soái"],answer:1},{q:"Học viện đào tạo, bồi dưỡng cán bộ cấp chiến lược?",opts:["Học viện Lục quân","Học viện Chính trị","Học viện Quốc phòng","Học viện Kỹ thuật Quân sự"],answer:2},{q:"Ngành bảo đảm thông tin chỉ huy trong QĐNDVN?",opts:["Công binh","Thông tin liên lạc","Tăng - Thiết giáp","Pháo binh"],answer:1}];
+let idx=0,score=0,locked=false,timeLeft=10,timerId=null;
+const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
+function start(){idx=0;score=0;locked=false;timeLeft=10;$('#splash').style.display='none';$('#quiz').style.display='block';$('#result').style.display='none';$('#score').textContent=score;render()}
+function render(){const cur=QUESTIONS[idx];$('#idx').textContent=idx+1;$('#question').textContent=cur.q;const ops=$('#options');ops.innerHTML='';cur.opts.forEach((t,i)=>{const b=document.createElement('button');b.className='btn';b.innerHTML=`<span class="letter">${String.fromCharCode(65+i)}</span><span>${t}</span>`;b.addEventListener('click',()=>pick(i));ops.appendChild(b)});$('#next').disabled=true;$('#bar').style.width=`${idx/QUESTIONS.length*100}%`;resetTimer()}
+function pick(choice){if(locked)return;locked=true;const cur=QUESTIONS[idx];const bs=$$('#options .btn');bs[cur.answer].classList.add('correct');if(choice===cur.answer){score++;$('#score').textContent=score}else if(choice>=0){bs[choice].classList.add('wrong')}$('#next').disabled=false;stopTimer()}
+function next(){if(idx<QUESTIONS.length-1){idx++;locked=false;timeLeft=10;render()}else finish()}
+function skip(){if(locked)return;pick(-1)}
+function finish(){$('#bar').style.width='100%';$('#quiz').style.display='none';$('#result').style.display='block';$('#finalScore').textContent=score;stars(score)}
+function stars(s){const el=$('#stars');el.innerHTML='';const total=5,filled=Math.round(s/QUESTIONS.length*total);for(let k=0;k<total;k++){const svg=`<svg class="star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.39 4.84 5.34.78-3.86 3.76.91 5.32L12 14.77 7.22 16.7l.91-5.32L4.27 7.62l5.34-.78L12 2z" fill="${k<filled?'var(--gold)':'#294a7a'}"/></svg>`;el.insertAdjacentHTML('beforeend',svg)}}
+function resetTimer(){stopTimer();timeLeft=10;$('#timer').textContent=timeLeft;timerId=setInterval(()=>{timeLeft--;$('#timer').textContent=timeLeft;if(timeLeft<=0){stopTimer();skip()}},1000)}
+function stopTimer(){clearInterval(timerId);timerId=null}
+$('#start').addEventListener('click',start);$('#next').addEventListener('click',next);$('#skip').addEventListener('click',skip);$('#retry').addEventListener('click',()=>{$('#splash').style.display='block';$('#quiz').style.display='none';$('#result').style.display='none'})
+</script>
+</body>
+</html>

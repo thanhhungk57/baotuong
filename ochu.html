@@ -742,6 +742,34 @@
       pointer-events: none;
       z-index: 9999;
     }
+.logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #2d5016, #1a2f0d);
+  border: 3px solid #ffc98b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  overflow: hidden; /* ✨ quan trọng: giới hạn hình không tràn */
+}
+
+.logo-img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain; /* giữ nguyên tỷ lệ logo */
+  border-radius: 50%;
+  background-color: #fff; /* nền sáng nhẹ giúp nổi bật */
+  padding: 4px; /* khoảng đệm */
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.logo:hover .logo-img {
+  transform: scale(1.05);
+}
+
   </style>
 </head>
 <body>
@@ -817,16 +845,67 @@
   </div>
 
 <script>
+
 const DATA = {
-  keyword: "BODOI",
+  keyword: "THANHNIEN", // T H A N H N I E N
   rows: [
-    { q: "Lực lượng thuộc QĐNDVN làm nhiệm vụ quản lý, bảo vệ biên giới quốc gia?", a: "BỘ ĐỘI BIÊN PHÒNG", pick: 0, crossAt: 0 },
-    { q: "Đại tướng, Tổng Tư lệnh QĐNDVN trong kháng chiến chống Pháp?", a: "VÕ NGUYÊN GIÁP", pick: 1, crossAt: 1 },
-    { q: "Đơn vị cấp chiến dịch gồm nhiều trung đoàn?", a: "SƯ ĐOÀN", pick: 2, crossAt: 2 },
-    { q: "Cơ quan tham mưu chiến lược cao nhất của QĐNDVN?", a: "BỘ TỔNG THAM MƯU", pick: 1, crossAt: 3 },
-    { q: "Quân chủng làm nhiệm vụ bảo vệ chủ quyền biển đảo của Tổ quốc?", a: "HẢI QUÂN", pick: 2, crossAt: 4 },
+    {
+      q: "Đại hội Đoàn toàn quốc lần thứ I diễn ra tại đâu?",
+      a: "THÁI NGUYÊN",
+      pick: 0,   // chữ 'T' trong THAINGUYEN
+      crossAt: 0 // cột T
+    },
+    {
+      q: "\"Mùa hoa Lêkima nở, ở quê ta miền đất đỏ, sông núi vẫn nhắc tên người anh hùng\", người anh hùng ấy là ai?",
+      a: "VÕ THỊ SÁU",
+      pick: 3,   // 'H' trong VOTHISAU
+      crossAt: 1 // cột H
+    },
+    {
+      q: "Người chiến sĩ cộng sản trẻ tuổi đã hy sinh anh dũng được truy tặng danh hiệu 'Cảm tử quân số 1 của Thủ đô' là ai?",
+      a: "LÊ GIA ĐỊNH",
+      pick: 4,   // 'A' trong LEGIADINH
+      crossAt: 2 // cột A
+    },
+    {
+      q: "Ai được coi là cha đẻ của ngành quân giới Việt Nam?",
+      a: "TRẦN ĐẠI NGHĨA",
+      pick: 3,   // 'N' trong TRANDAINGHIA
+      crossAt: 3 // cột N
+    },
+    {
+      q: "Tác giả của bài Đoàn ca là ai?",
+      a: "HOÀNG HÀ",
+      pick: 0,   // 'H'
+      crossAt: 4 // cột H
+    },
+    {
+      q: "Đoạn thơ miêu tả người thiếu niên nào? “Chú bé loắt choắt...”",
+      a: "NÔNG VĂN DỀN",
+      pick: 0,   // 'N'
+      crossAt: 5 // cột N
+    },
+    {
+      q: "“...Đoàn viên và thanh niên ta nói chung là tốt, mọi việc đều hăng hái xung phong...” được Bác Hồ viết ở tài liệu nào?",
+      a: "DI CHÚC",
+      pick: 1,   // 'I'
+      crossAt: 6 // cột I
+    },
+    {
+      q: "Hai câu thơ sau đề cập đến người nào: “Thắp lửa thiêu đốt bãi kho vũ khí của kẻ thù...”",
+      a: "LÊ VĂN TÁM",
+      pick: 1,   // 'E' (từ Ê được chuẩn hóa thành E)
+      crossAt: 7 // cột E
+    },
+    {
+      q: "Biểu tượng cao đẹp của 10 cô gái TNXP anh hùng tại Hà Tĩnh?",
+      a: "ĐỒNG LỘC",
+      pick: 2,   // 'N' trong DONGLOC
+      crossAt: 8 // cột N
+    }
   ]
 };
+
 
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
@@ -994,21 +1073,33 @@ function restart(){
 }
 
 function guessFinal(){
-  const guess = stripSpaces(normalizeVN($('#finalGuess').value)); 
-  if(!guess){ 
-    $('#finalMsg').textContent='Vui lòng nhập từ khóa!'; 
-    return; 
+  const guess = stripSpaces(normalizeVN($('#finalGuess').value));
+  if(!guess){
+    $('#finalMsg').textContent='Nhập từ khóa cần đoán nhé!';
+    return;
   }
+
   const target = keyNormalized();
-  if(guess === target){ 
-    fillKeyword(stripSpaces(toUpperKeepVN(DATA.keyword))); 
-    $('#finalMsg').textContent='CHÚC MỪNG! Bạn đã đoán đúng từ khóa: '+DATA.keyword; 
-    keywordSolved = true;
-    showAllAnswers();
-    celebrate(); 
-  }
-  else { 
-    $('#finalMsg').textContent='Từ khóa chưa chính xác. Hãy thử lại!'; 
+  if(guess === target){
+    // 1️⃣ Điền keyword dọc
+    fillKeyword(stripSpaces(toUpperKeepVN(DATA.keyword)));
+
+    // 2️⃣ Mở toàn bộ hàng (kể cả chưa trả lời)
+    DATA.rows.forEach((_, i)=>{
+      if(!solved.has(i)) revealRow(i);
+    });
+
+    // 3️⃣ Hiện toàn bộ câu hỏi trong class question-item
+    document.querySelectorAll('.question-item').forEach(q=>{
+      q.style.display = 'block';
+      q.classList.add('revealed');
+    });
+
+    // 4️⃣ Thông báo chiến thắng
+    $('#finalMsg').textContent = 'Tuyệt vời! Bạn đã đoán đúng từ khóa: ' + DATA.keyword;
+    celebrate();
+  } else {
+    $('#finalMsg').textContent = 'Chưa đúng. Thử lại nhé!';
   }
 }
 

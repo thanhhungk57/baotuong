@@ -6,17 +6,15 @@
   <title>Ô Chữ Quân Đội NDVN (Menu gọn đẹp)</title>
   <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* ===== MENU GỌN & ĐẸP (floating) ===== */
+    /* ===== MENU GỌN & ĐẸP (floating, đồng bộ quiz) ===== */
     body {font-family: 'Play', sans-serif;}
     
-    html 
-
-    /* Vị trí cố định góc trên bên phải, nổi trên mọi nội dung */
+    /* Vị trí cố định góc trên bên phải */
     #dp_menu{position:fixed; top:16px; right:16px; z-index:1000}
     #dp_menu *{box-sizing:border-box}
 
-    /* Nút tròn nhỏ (40x40) */
-    #dp_menu button{
+    /* Nút tròn chính */
+    #dp_menu > button{
       width:40px; height:40px;
       display:inline-grid; place-items:center;
       border:none; cursor:pointer; border-radius:12px;
@@ -24,27 +22,23 @@
       color:#eaf2ff; box-shadow:0 8px 22px rgba(0,0,0,.35);
       border:1px solid #1e406e; padding:0; outline:none;
     }
-    /* Icon hamburger / close bằng content */
-    #dp_menu button:before{
+    #dp_menu > button:before{
       content:"\2261"; /* ≡ */
       font-weight:700; font-size:18px; line-height:1;
     }
-    /* Khi mở: đổi thành × */
-    #dp_menu.show button:before{content:"\00D7";} /* × */
+    #dp_menu.show > button:before{content:"\00D7";} /* × */
 
-    /* Dropdown nhỏ gọn */
+    /* Dropdown */
     #dp_menu ul, #dp_menu li{margin:0; padding:0; list-style:none}
     #dp_menu ul{
       position:absolute; top:48px; right:0;
-      width:200px;
+      width:180px;
       background:#ffffff;
       color:#0c2544;
       border:1px solid #dfe7f3;
       border-radius:12px;
       box-shadow:0 16px 34px rgba(3,16,36,.25);
       overflow:hidden;
-
-      /* Ẩn bằng opacity + transform để mượt */
       opacity:0; transform:translateY(6px) scale(.98);
       pointer-events:none;
       transition:opacity .18s ease, transform .18s ease;
@@ -53,18 +47,17 @@
       opacity:1; transform:none; pointer-events:auto;
     }
 
-    /* Mục menu nhỏ gọn */
-    #dp_menu li a, #dp_menu li button{
+    /* Mục menu */
+    #dp_menu li a{
       display:flex; align-items:center; gap:10px;
       padding:10px 12px;
       color:inherit; text-decoration:none; font-weight:700; font-size:14px;
-      width:100%; background:transparent; border:none; text-align:left; cursor:pointer;
     }
-    #dp_menu li + li a, #dp_menu li + li button{border-top:1px solid #eef3fb}
-    #dp_menu li .ico{width:18px; display:inline-grid; place-items:center; opacity:.9}
-    #dp_menu li a:hover, #dp_menu li button:hover{background:#f3f7ff}
+    #dp_menu li + li a{border-top:1px solid #eef3fb}
+    #dp_menu li a .ico{width:18px; display:inline-grid; place-items:center; opacity:.9}
+    #dp_menu li a:hover{background:#f3f7ff}
 
-    /* ===== PHẦN GIAO DIỆN Ô CHỮ (giữ toàn bộ phong cách cũ) ===== */
+    /* ===== Giữ nguyên toàn bộ CSS phần trò chơi ===== */
     :root{
       --bg:#0a1429; --panel:#0d1a33; --muted:#8fa3c7; --text:#e1eafc;
       --line:#1d2c4a; --accent:#22d3ee; --accent2:#a78bfa;
@@ -185,15 +178,14 @@
 </head>
 <body>
   <!-- ===== MENU GỌN ĐẸP ===== -->
-  <nav id="dp_menu" aria-label="Menu chính">
+   <nav id="dp_menu" aria-label="Menu chính">
     <button id="dp_toggle" type="button" aria-expanded="false" aria-controls="dp_list"></button>
-    <ul id="dp_list" class="sub-menu" role="menu" aria-hidden="true">
-      <li><a href="https://thanhhungk57.github.io/baotuong/" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;"><span class="ico">🏠</span><span>Trang chính</span></a></li>
-      <li><button type="button" onclick="restart();"><span class="ico">🔁</span><span>Chơi lại</span></button></li>
-      <li><button type="button" onclick="showAllAnswers(); document.getElementById('answersPanel').scrollIntoView({behavior:'smooth'});"><span class="ico">✅</span><span>Hiển thị đáp án</span></button></li>
-      <li><button type="button" onclick="showRules();"><span class="ico">📜</span><span>Xem luật chơi</span></button></li>
-      <li><a href="#" onclick="document.getElementById('keyword').scrollIntoView({behavior:'smooth'}); return false;"><span class="ico">🧩</span><span>Từ khóa dọc</span></a></li>
-  
+    <ul id="dp_list" class="sub-menu" role="menu" aria-hidden="false">
+      <li role="menuitem"><a href="https://thanhhungk57.github.io/baotuong/" target="_blank"><span class="ico">🏠</span><span>Trang chính</span></a></li>
+      <li role="menuitem"><a href="#" onclick="restart(); return false;"><span class="ico">🔁</span><span>Chơi lại</span></a></li>
+      <li role="menuitem"><a href="#" onclick="showAllAnswers(); document.getElementById('answersPanel').scrollIntoView({behavior:'smooth'}); return false;"><span class="ico">✅</span><span>Hiển thị đáp án</span></a></li>
+      <li role="menuitem"><a href="#" onclick="showRules(); return false;"><span class="ico">📜</span><span>Xem luật chơi</span></a></li>
+      <li role="menuitem"><a href="#" onclick="document.getElementById('keyword').scrollIntoView({behavior:'smooth'}); return false;"><span class="ico">🧩</span><span>Từ khóa dọc</span></a></li>
     </ul>
   </nav>
 
@@ -509,21 +501,22 @@ function closeRules(){
 
 </script>
 
-<div id="rulesModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
-  <div style="background:#fff; color:#0c2544; border-radius:12px; padding:20px; max-width:480px; width:90%; box-shadow:0 8px 20px rgba(0,0,0,0.4); text-align:left; line-height:1.6;">
-    <h2 style="margin-top:0; text-align:center;">📜 Luật chơi Ô Chữ</h2>
-    <ul style="padding-left:20px;">
+<div id="rulesModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(180deg,#0d203f,#08172e);color:#eaf2ff;border:1px solid #2a4f88;border-radius:14px;padding:24px;max-width:480px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:left;line-height:1.6;">
+    <h2 style="margin-top:0;text-align:center;color:#4ad1ff;">📜 Luật chơi Ô Chữ</h2>
+    <ul style="padding-left:20px;margin:0;">
       <li>Mỗi câu hỏi tương ứng với một hàng ô chữ ngang.</li>
       <li>Khi trả lời đúng, toàn bộ hàng ô chữ sẽ được mở ra.</li>
       <li>Mỗi hàng có một ô giao cắt với từ khóa dọc — ký tự này sẽ được tiết lộ.</li>
       <li>Khi đã biết đủ các chữ cái, hãy nhập từ khóa dọc để chiến thắng!</li>
       <li>Bấm “Chơi lại” để bắt đầu ván mới.</li>
     </ul>
-    <div style="text-align:center; margin-top:16px;">
-      <button onclick="closeRules();" style="background:#0e315a; color:#fff; border:none; border-radius:8px; padding:10px 16px; cursor:pointer;">Đã hiểu</button>
+    <div style="text-align:center;margin-top:18px;">
+      <button onclick="closeRules();" style="background:linear-gradient(180deg,#2e90ff,#1b6cd6);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">Đã hiểu</button>
     </div>
   </div>
 </div>
+
 
 </body>
 </html>

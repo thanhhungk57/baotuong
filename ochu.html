@@ -14,6 +14,7 @@
     }
     *{box-sizing:border-box; margin:0; padding:0;}
     html,body{height:100%;}
+    html{scroll-behavior:smooth;}
     body{
       font-family:'Segoe UI', system-ui, Roboto, sans-serif; 
       background:radial-gradient(ellipse at top, #0f2248 0%, #0a142a 60%, var(--bg) 100%); 
@@ -770,9 +771,30 @@
   transform: scale(1.05);
 }
 
-  </style>
+  
+.home-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-size: 15px;
+  z-index: 1000;
+  transition: background 0.3s;
+}
+.home-btn:hover {
+  background: #0056b3;
+}
+
+</style>
 </head>
 <body>
+  <a id="homeBtn" href="#" class="home-btn">🏠 Trang chủ</a>
   <div class="app">
     <div class="header">
       <div class="logo">
@@ -847,61 +869,55 @@
 <script>
 
 const DATA = {
-  keyword: "THANHNIEN", // T H A N H N I E N
+  keyword: "BỘĐỘICỤHỒ", // B Ộ Đ Ộ I C Ụ H Ồ
   rows: [
     {
-      q: "Đại hội Đoàn toàn quốc lần thứ I diễn ra tại đâu?",
-      a: "THÁI NGUYÊN",
-      pick: 0,   // chữ 'T' trong THAINGUYEN
-      crossAt: 0 // cột T
+      q: "Chiến thắng lịch sử nào kết thúc cuộc kháng chiến chống Pháp của Việt Nam?",
+      a: "ĐIỆN BIÊN PHỦ",
+      pick: 0,   // chữ 'B'
+      crossAt: 0 // cột B
     },
     {
-      q: "\"Mùa hoa Lêkima nở, ở quê ta miền đất đỏ, sông núi vẫn nhắc tên người anh hùng\", người anh hùng ấy là ai?",
-      a: "VÕ THỊ SÁU",
-      pick: 3,   // 'H' trong VOTHISAU
-      crossAt: 1 // cột H
+      q: "Thành phố nào là địa điểm diễn ra chiến thắng 'Điện Biên Phủ trên không' năm 1972?",
+      a: "HÀ NỘI",
+      pick: 1,   // 'Ộ'
+      crossAt: 1 // cột Ộ
     },
     {
-      q: "Người chiến sĩ cộng sản trẻ tuổi đã hy sinh anh dũng được truy tặng danh hiệu 'Cảm tử quân số 1 của Thủ đô' là ai?",
-      a: "LÊ GIA ĐỊNH",
-      pick: 4,   // 'A' trong LEGIADINH
-      crossAt: 2 // cột A
+      q: "Câu thơ “Trận Điện Biên Phủ lẫy lừng / Thân làm nên vinh quang của anh hùng” nói về ai?",
+      a: "BẾ VĂN ĐÀN",
+      pick: 0,   // 'Đ'
+      crossAt: 2 // cột Đ
     },
     {
-      q: "Ai được coi là cha đẻ của ngành quân giới Việt Nam?",
-      a: "TRẦN ĐẠI NGHĨA",
-      pick: 3,   // 'N' trong TRANDAINGHIA
-      crossAt: 3 // cột N
+      q: "Thủ lĩnh cuộc khởi nghĩa Thái Nguyên năm 1917, còn gọi là Trịnh Văn Cấn, là ai?",
+      a: "ĐỘI CẤN",
+      pick: 0,   // 'Đ'
+      crossAt: 3 // cột Ộ
     },
     {
-      q: "Tác giả của bài Đoàn ca là ai?",
-      a: "HOÀNG HÀ",
+      q: "Nguyễn Tất Thành lấy tên là Nguyễn Ái Quốc vào năm 1919 ở đâu?",
+      a: "VECXAY",
+      pick: 0,   // 'I'
+      crossAt: 4 // cột I
+    },
+    {
+      q: "Cấu trúc nửa chìm nửa nổi, có lỗ bắn ra các hướng, cửa quay vào trong, gọi là gì?",
+      a: "Ụ SÚNG",
+      pick: 0,   // 'C'
+      crossAt: 5 // cột C
+    },
+    {
+      q: "Nguyễn Ái Quốc thành lập Hội Việt Nam Cách mạng Thanh niên ở đâu?",
+      a: "QUẢNG CHÂU",
+      pick: 0,   // 'Ụ'
+      crossAt: 6 // cột Ụ
+    },
+    {
+      q: "Chiến dịch nào kết thúc cuộc kháng chiến chống Mỹ tại Việt Nam?",
+      a: "HỒ CHÍ MINH",
       pick: 0,   // 'H'
-      crossAt: 4 // cột H
-    },
-    {
-      q: "Đoạn thơ miêu tả người thiếu niên nào? “Chú bé loắt choắt...”",
-      a: "NÔNG VĂN DỀN",
-      pick: 0,   // 'N'
-      crossAt: 5 // cột N
-    },
-    {
-      q: "“...Đoàn viên và thanh niên ta nói chung là tốt, mọi việc đều hăng hái xung phong...” được Bác Hồ viết ở tài liệu nào?",
-      a: "DI CHÚC",
-      pick: 1,   // 'I'
-      crossAt: 6 // cột I
-    },
-    {
-      q: "Hai câu thơ sau đề cập đến người nào: “Thắp lửa thiêu đốt bãi kho vũ khí của kẻ thù...”",
-      a: "LÊ VĂN TÁM",
-      pick: 1,   // 'E' (từ Ê được chuẩn hóa thành E)
-      crossAt: 7 // cột E
-    },
-    {
-      q: "Biểu tượng cao đẹp của 10 cô gái TNXP anh hùng tại Hà Tĩnh?",
-      a: "ĐỒNG LỘC",
-      pick: 2,   // 'N' trong DONGLOC
-      crossAt: 8 // cột N
+      crossAt: 7 // cột H
     }
   ]
 };
@@ -1000,6 +1016,12 @@ function build(){
   $('#answersPanel').classList.remove('active');
 }
 
+function scrollToKeyword(){
+  const el = $('#keyword');
+  if(!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function openQA(idx){
   currentRow = idx; 
   $('#qa').classList.add('active'); 
@@ -1026,7 +1048,8 @@ function checkAnswer(){
     setTimeout(() => {
       $('#qa').classList.remove('active');
       currentRow = null;
-    }, 1500);
+    }, 1200);
+    setTimeout(scrollToKeyword, 1300);
   }
   else { 
     $('#feedback').textContent='Chưa chính xác. Hãy thử lại!'; 
@@ -1152,7 +1175,27 @@ function celebrate(){
             transform: translateY(110vh) rotate(360deg);
           }
         }
-      </style>
+      
+.home-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-size: 15px;
+  z-index: 1000;
+  transition: background 0.3s;
+}
+.home-btn:hover {
+  background: #0056b3;
+}
+
+</style>
     </svg>
   `; 
   document.body.appendChild(confetti); 
@@ -1173,6 +1216,7 @@ $('#answer').addEventListener('keydown', e=>{
 $('#btnClose').addEventListener('click', ()=>{ 
   $('#qa').classList.remove('active'); 
   currentRow=null; 
+  scrollToKeyword();
 });
 $('#btnRestart').addEventListener('click', restart);
 $('#btnFinal').addEventListener('click', guessFinal);
@@ -1185,5 +1229,16 @@ $('#ladder').addEventListener('click', e=>{
 
 build();
 </script>
+
+<script>
+  const homeBtn = document.getElementById('homeBtn');
+  homeBtn.addEventListener('click', function(e) {
+    if (this.getAttribute('href') === 'https://thanhhungk57.github.io/baotuong/') {
+      e.preventDefault();
+      alert('💡 Hãy gắn đường link trang chủ của bạn vào thuộc tính href trong nút này!');
+    }
+  });
+</script>
+
 </body>
 </html>

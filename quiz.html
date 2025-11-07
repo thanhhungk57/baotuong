@@ -3,13 +3,72 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quiz QĐNDVN — App</title>
+<title>Quiz QĐNDVN — App (Menu gọn đẹp)</title>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* ===== MENU GỌN & ĐẸP (floating) ===== */
+body {font-family: 'Play', sans-serif;}
+body:after{ display: table;position:absolute; right:0; bottom:0}
+html body:after {content:"\0064\0061\0069\0070\0068\006F\002E\0063\006F\006D";}
+
+/* Vị trí cố định góc trên bên phải, nổi trên mọi nội dung */
+#dp_menu{position:fixed; top:16px; right:16px; z-index:1000}
+#dp_menu *{box-sizing:border-box}
+
+/* Nút tròn nhỏ (40x40) */
+#dp_menu button{
+  width:40px; height:40px;
+  display:inline-grid; place-items:center;
+  border:none; cursor:pointer; border-radius:12px;
+  background:linear-gradient(180deg,#0e315a,#0a2a4a);
+  color:#eaf2ff; box-shadow:0 8px 22px rgba(0,0,0,.35);
+  border:1px solid #1e406e; padding:0; outline:none;
+}
+/* Icon hamburger / close bằng content */
+#dp_menu button:before{
+  content:"\2261"; /* ≡ */
+  font-weight:700; font-size:18px; line-height:1;
+}
+/* Khi mở: đổi thành × */
+#dp_menu.show button:before{content:"\00D7";} /* × */
+
+/* Dropdown nhỏ gọn */
+#dp_menu ul, #dp_menu li{margin:0; padding:0; list-style:none}
+#dp_menu ul{
+  position:absolute; top:48px; right:0;
+  width:180px;
+  background:#ffffff;
+  color:#0c2544;
+  border:1px solid #dfe7f3;
+  border-radius:12px;
+  box-shadow:0 16px 34px rgba(3,16,36,.25);
+  overflow:hidden;
+
+  /* Ẩn bằng opacity + transform để mượt */
+  opacity:0; transform:translateY(6px) scale(.98);
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+}
+#dp_menu.show ul{
+  opacity:1; transform:none; pointer-events:auto;
+}
+
+/* Mục menu nhỏ gọn */
+#dp_menu li a{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  color:inherit; text-decoration:none; font-weight:700; font-size:14px;
+}
+#dp_menu li + li a{border-top:1px solid #eef3fb}
+#dp_menu li a .ico{width:18px; display:inline-grid; place-items:center; opacity:.9}
+#dp_menu li a:hover{background:#f3f7ff}
+
+/* ===== PHẦN GIAO DIỆN QUIZ (giữ nguyên) ===== */
 :root{--text:#e8f2ff;--muted:#a9c3e6;--accent:#2ad19f;--accent2:#3aa1ff;--gold:#ffd54d;--danger:#ff5d5d;--ok:#22c55e;--overlay:#0007}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background-size:cover;background-position:left top;background-repeat:no-repeat;display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--text)}
-.app{width:min(760px,100%);background:rgba(10,25,50,.92);border-radius:18px;backdrop-filter:blur(8px);box-shadow:0 8px 40px var(--overlay);padding:16px;position:relative}
+body{background-size:cover;background-position:left top;background-repeat:no-repeat;min-height:100vh;color:var(--text)}
+.app{width:min(760px,100%);background:rgba(10,25,50,.92);border-radius:18px;backdrop-filter:blur(8px);box-shadow:0 8px 40px var(--overlay);padding:16px;position:relative;margin:72px auto 0} /* chừa chỗ cho menu */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand h1{margin:0;font-size:clamp(18px,5vw,26px);letter-spacing:.3px}
@@ -41,82 +100,24 @@ body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background-size:cover;bac
 .ctaStart{display:grid;gap:14px;place-items:center;padding:28px}
 .startbtn{background:linear-gradient(180deg,#2ad19f,#20c997);border:none;border-radius:14px;color:#062234;font-weight:900;padding:14px 18px;cursor:pointer}
 .mobilehint{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
-@media(max-width:420px){.btn{padding:12px}.letter{width:26px;height:26px}.header{gap:8px}.logo{width:44px;height:44px}}.letter{width:26px;height:26px}.header{gap:8px}}
-
-
-/* === Drawer Trang chủ (ẩn/kéo ra) === */
-.app { position: relative; } /* đảm bảo định vị tương đối để drawer bám theo app, không bám theo màn hình */
-.drawer {
-  position: absolute;
-  top: 12px;
-  right: -220px; /* ẩn ra ngoài khung app */
-  width: 210px;
-  background: linear-gradient(180deg,#0e315a,#0a2a4a);
-  border: 1px solid #1e406e;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  transition: right .25s ease;
-  z-index: 20;
-}
-.drawer.open { right: 12px; }
-
-.drawer a.drawer-link {
-  display: block;
-  background: #2e90ff;
-  color: #041527;
-  text-decoration: none;
-  font-weight: 900;
-  border-radius: 10px;
-  padding: 12px 14px;
-  text-align: center;
-}
-
-
-.drawer-handle {
-  position: absolute;
-  top: 50%;
-  right: -8px;                 /* luôn ló ra mép phải của .app */
-  transform: translateY(-50%); /* canh giữa theo chiều dọc */
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(180deg,#2ad19f,#20c997);
-  color: #062234;
-  border: 2px solid #1c6e55;
-  border-radius: 22px 0 0 22px; /* viên nút hình viên thuốc */
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 6px 14px rgba(0,0,0,.35);
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  z-index: 9999;               /* đảm bảo luôn nổi trên */
-}
-
-.drawer-handle:active { transform: translateX(100%) scale(.98); }
-
-/* Mobile fine-tune */
-@media (max-width: 480px){
-  .drawer-handle { right: -6px; width: 42px; height: 42px; }
-}
-
-@media (max-width: 420px){
-  .drawer { width: 190px; right: -200px; }
-  .drawer.open { right: 10px; }
-}
-
+@media(max-width:420px){.btn{padding:12px}.letter{width:26px;height:26px}.header{gap:8px}.logo{width:44px;height:44px}}
 </style>
 </head>
 <body style="background-image:url('backgrounddoanthanhnien.jpg');">
-<div class="app">
-  <!-- Drawer Trang chủ (ẩn/kéo ra) -->
-  <div id="drawer" class="drawer" aria-hidden="true">
-    <a id="homeLink" href="https://thanhhungk57.github.io/baotuong/" class="drawer-link">🏠 Trang chủ</a>
-  </div>
-  <button id="drawerHandle" class="drawer-handle" aria-controls="drawer" aria-expanded="false">≡</button>
 
+<!-- ===== MENU GỌN ĐẸP ===== -->
+<nav id="dp_menu" aria-label="Menu chính">
+  <button id="dp_toggle" type="button" aria-expanded="false" aria-controls="dp_list"></button>
+  
+<ul id="dp_list" class="sub-menu" role="menu" aria-hidden="false">
+  <li role="menuitem"><a href="https://thanhhungk57.github.io/baotuong/" target="_blank"><span class="ico">🏠</span> <span>Trang chính</span></a></li>
+  <li role="menuitem"><a href="#" onclick="showContact(); return false;"><span class="ico">✉️</span> <span>Liên hệ</span></a></li>
+  <li role="menuitem"><a href="#" onclick="showRules(); return false;"><span class="ico">📜</span> <span>Xem luật chơi</span></a></li>
+</ul>
+
+</nav>
+
+<div class="app">
   <div class="header">
     <div class="brand">
       <img src="logothanhnienquandoi.jpg" alt="Thanh niên Quân đội" class="logo"/>
@@ -147,8 +148,53 @@ body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background-size:cover;bac
     </div>
   </div>
 </div>
+
 <script>
-const QUESTIONS=[{q:"QĐNDVN được thành lập vào ngày nào?",opts:["02/09/1945","22/12/1944","30/04/1975","19/08/1945"],answer:1},{q:"Tiền thân của QĐNDVN là lực lượng nào?",opts:["Đội Việt Nam Tuyên truyền Giải phóng quân","Vệ quốc đoàn","Cứu quốc quân","Trung đoàn Thủ đô"],answer:0},{q:"Chiến thắng lịch sử năm 1954 làm thay đổi cục diện chiến tranh ở Đông Dương là?",opts:["Chiến dịch Biên giới","Điện Biên Phủ","Chiến dịch Hồ Chí Minh","Quyết chiến Điện Biên"],answer:1},{q:"Quân chủng có nhiệm vụ bảo vệ bầu trời Tổ quốc?",opts:["Hải quân","Phòng không - Không quân","Bộ binh","Biên phòng"],answer:1},{q:"Cơ quan tham mưu chiến lược cao nhất của QĐNDVN là?",opts:["Bộ Tổng Tham mưu","Bộ Quốc phòng","Tổng cục Chính trị","Bộ Tổng cục"],answer:0},{q:"Phẩm chất gắn với 'Bộ đội Cụ Hồ' KHÔNG bao gồm?",opts:["Trung với Đảng, hiếu với dân","Cần, kiệm, liêm, chính","Tận tụy vì nhân dân","Xa rời quần chúng"],answer:3},{q:"Ngày hội Quốc phòng toàn dân?",opts:["22/12","02/09","19/08","01/05"],answer:0},{q:"Cấp bậc quân hàm cao nhất hiện nay?",opts:["Thượng tướng","Đại tướng","Trung tướng","Nguyên soái"],answer:1},{q:"Học viện đào tạo, bồi dưỡng cán bộ cấp chiến lược?",opts:["Học viện Lục quân","Học viện Chính trị","Học viện Quốc phòng","Học viện Kỹ thuật Quân sự"],answer:2},{q:"Ngành bảo đảm thông tin chỉ huy trong QĐNDVN?",opts:["Công binh","Thông tin liên lạc","Tăng - Thiết giáp","Pháo binh"],answer:1}];
+/* ====== Toggle cho MENU GỌN ====== */
+(function(){
+  const nav = document.getElementById('dp_menu');
+  const btn = document.getElementById('dp_toggle');
+  const list = document.getElementById('dp_list');
+
+  function setState(open){
+    nav.classList.toggle('show', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    list.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+
+  btn.addEventListener('click', ()=>{
+    const open = !nav.classList.contains('show');
+    setState(open);
+  });
+
+  document.addEventListener('click', (e)=>{
+    if(!nav.contains(e.target)){
+      setState(false);
+    }
+  });
+
+  // Đóng bằng phím ESC
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape'){ setState(false); }
+  });
+
+  // Khởi tạo: đóng
+  setState(false);
+})();
+
+/* ====== LOGIC QUIZ (giữ nguyên) ====== */
+const QUESTIONS=[
+  {q:"QĐNDVN được thành lập vào ngày nào?",opts:["02/09/1945","22/12/1944","30/04/1975","19/08/1945"],answer:1},
+  {q:"Tiền thân của QĐNDVN là lực lượng nào?",opts:["Đội Việt Nam Tuyên truyền Giải phóng quân","Vệ quốc đoàn","Cứu quốc quân","Trung đoàn Thủ đô"],answer:0},
+  {q:"Chiến thắng lịch sử năm 1954 làm thay đổi cục diện chiến tranh ở Đông Dương là?",opts:["Chiến dịch Biên giới","Điện Biên Phủ","Chiến dịch Hồ Chí Minh","Quyết chiến Điện Biên"],answer:1},
+  {q:"Quân chủng có nhiệm vụ bảo vệ bầu trời Tổ quốc?",opts:["Hải quân","Phòng không - Không quân","Bộ binh","Biên phòng"],answer:1},
+  {q:"Cơ quan tham mưu chiến lược cao nhất của QĐNDVN là?",opts:["Bộ Tổng Tham mưu","Bộ Quốc phòng","Tổng cục Chính trị","Bộ Tổng cục"],answer:0},
+  {q:"Phẩm chất gắn với 'Bộ đội Cụ Hồ' KHÔNG bao gồm?",opts:["Trung với Đảng, hiếu với dân","Cần, kiệm, liêm, chính","Tận tụy vì nhân dân","Xa rời quần chúng"],answer:3},
+  {q:"Ngày hội Quốc phòng toàn dân?",opts:["22/12","02/09","19/08","01/05"],answer:0},
+  {q:"Cấp bậc quân hàm cao nhất hiện nay?",opts:["Thượng tướng","Đại tướng","Trung tướng","Nguyên soái"],answer:1},
+  {q:"Học viện đào tạo, bồi dưỡng cán bộ cấp chiến lược?",opts:["Học viện Lục quân","Học viện Chính trị","Học viện Quốc phòng","Học viện Kỹ thuật Quân sự"],answer:2},
+  {q:"Ngành bảo đảm thông tin chỉ huy trong QĐNDVN?",opts:["Công binh","Thông tin liên lạc","Tăng - Thiết giáp","Pháo binh"],answer:1}
+];
 let idx=0,score=0,locked=false,timeLeft=10,timerId=null;
 const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
 function start(){idx=0;score=0;locked=false;timeLeft=10;$('#splash').style.display='none';$('#quiz').style.display='block';$('#result').style.display='none';$('#score').textContent=score;render()}
@@ -161,84 +207,41 @@ function stars(s){const el=$('#stars');el.innerHTML='';const total=5,filled=Math
 function resetTimer(){stopTimer();timeLeft=10;$('#timer').textContent=timeLeft;timerId=setInterval(()=>{timeLeft--;$('#timer').textContent=timeLeft;if(timeLeft<=0){stopTimer();skip()}},1000)}
 function stopTimer(){clearInterval(timerId);timerId=null}
 $('#start').addEventListener('click',start);$('#next').addEventListener('click',next);$('#skip').addEventListener('click',skip);$('#retry').addEventListener('click',()=>{$('#splash').style.display='block';$('#quiz').style.display='none';$('#result').style.display='none'})
+
+function showContact(){ document.getElementById('contactModal').style.display='flex'; }
+function closeContact(){ document.getElementById('contactModal').style.display='none'; }
+function showRules(){ document.getElementById('rulesModal').style.display='flex'; }
+function closeRules(){ document.getElementById('rulesModal').style.display='none'; }
 </script>
 
-<script>
-  (function(){
-    var homeBtn = document.getElementById('homeBtn');
-    if(homeBtn){
-      homeBtn.addEventListener('click', function(e){
-        if (this.getAttribute('href') === '#') {
-          e.preventDefault();
-          alert('💡 Hãy gắn đường link trang chủ của bạn vào thuộc tính href trong nút này!');
-        }
-      });
-    }
-  })();
-</script>
+<!-- Popup Liên hệ -->
+<div id="contactModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(180deg,#0d203f,#08172e);color:#eaf2ff;border:1px solid #2a4f88;border-radius:14px;padding:24px;max-width:360px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:center;">
+    <h2 style="margin-top:0;color:#4ad1ff;">📞 Liên hệ</h2>
+    <p style="margin:6px 0;">Học viện Kỹ thuật Quân sự</p>
+    <p style="margin:0;">✉️ <b>info@mta.edu.vn</b></p>
+    <div style="margin-top:16px;">
+      <button onclick="closeContact();" style="background:linear-gradient(180deg,#2e90ff,#1b6cd6);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-weight:700;cursor:pointer;">Đóng</button>
+    </div>
+  </div>
+</div>
 
-
-<script>
-
-(function(){
-  var drawer = document.getElementById('drawer');
-  var handle = document.getElementById('drawerHandle');
-  var link = document.getElementById('homeLink');
-
-  function setArrow(){
-    var isOpen = drawer.classList.contains('open');
-    handle.textContent = isOpen ? '◀' : '▶';
-    handle.setAttribute('aria-expanded', isOpen ? 'true':'false');
-    drawer.setAttribute('aria-hidden', isOpen ? 'false':'true');
-  }
-
-  function toggle(open){
-    var isOpen = (open != null) ? open : !drawer.classList.contains('open');
-    drawer.classList.toggle('open', isOpen);
-    setArrow();
-  }
-
-  // init
-  setArrow();
-
-  handle.addEventListener('click', function(){ toggle(); });
-
-  // Đóng khi click ra ngoài vùng drawer
-  document.addEventListener('click', function(e){
-    if(!drawer.classList.contains('open')) return;
-    if(!drawer.contains(e.target) && e.target !== handle){
-      toggle(false);
-    }
-  });
-
-  // Vuốt: kéo nhẹ vào/ra đều toggle
-  var startX = null, startY = null, moved = false;
-  handle.addEventListener('touchstart', function(e){
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    moved = false;
-  }, {passive:true});
-  handle.addEventListener('touchmove', function(e){
-    if(startX==null) return;
-    var dx = e.touches[0].clientX - startX;
-    var dy = e.touches[0].clientY - startY;
-    if(Math.abs(dx) > 24 && Math.abs(dx) > Math.abs(dy)) moved = true;
-  }, {passive:true});
-  handle.addEventListener('touchend', function(){
-    if(moved){ toggle(); }
-    startX=null; startY=null; moved=false;
-  });
-
-  // Cảnh báo nếu chưa gắn link
-  link.addEventListener('click', function(e){
-    if (this.getAttribute('href') === '#'){
-      e.preventDefault();
-      alert('💡 Hãy gắn đường link trang chủ của bạn vào thuộc tính href của nút Trang chủ trong drawer!');
-    }
-  });
-})();
-</script>
-
+<!-- Popup Luật chơi -->
+<div id="rulesModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(180deg,#0d203f,#08172e);color:#eaf2ff;border:1px solid #2a4f88;border-radius:14px;padding:24px;max-width:480px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:left;line-height:1.6;">
+    <h2 style="margin-top:0;text-align:center;color:#4ad1ff;">📜 Luật chơi Quiz QĐNDVN</h2>
+    <ul style="padding-left:20px;margin:0;">
+      <li>Mỗi lượt chơi gồm 10 câu hỏi, mỗi câu có 4 lựa chọn.</li>
+      <li>Thời gian cho mỗi câu là <b>10 giây</b>. Hết thời gian sẽ tự chuyển sang câu tiếp theo.</li>
+      <li>Chọn đúng được <b>1 điểm</b>. Không bị trừ điểm khi sai.</li>
+      <li>Có thể bấm "Bỏ qua" để sang câu khác.</li>
+      <li>Khi hoàn thành 10 câu, điểm và xếp hạng sao sẽ hiển thị.</li>
+    </ul>
+    <div style="text-align:center;margin-top:18px;">
+      <button onclick="closeRules();" style="background:linear-gradient(180deg,#2e90ff,#1b6cd6);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">Đã hiểu</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

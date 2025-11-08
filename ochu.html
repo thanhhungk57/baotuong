@@ -3,193 +3,150 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ô Chữ Quân Đội NDVN (Menu gọn đẹp)</title>
+  <title>Ô Chữ Quân Đội NDVN — Bản sửa</title>
   <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* ===== MENU GỌN & ĐẸP (floating, đồng bộ quiz) ===== */
-    body {font-family: 'Play', sans-serif;}
-    
-    /* Vị trí cố định góc trên bên phải */
+    body {font-family: 'Play', sans-serif; background:radial-gradient(ellipse at top, #0f2248 0%, #0a142a 60%, #0a1429 100%); color:#e1eafc; padding:12px; overflow-x:hidden; line-height:1.5;}
+    .app{width:100%; max-width:1200px; margin:64px auto 0;}
+
+    /* MENU */
     #dp_menu{position:fixed; top:16px; right:16px; z-index:1000}
     #dp_menu *{box-sizing:border-box}
-
-    /* Nút tròn chính */
-    #dp_menu > button{
-      width:40px; height:40px;
-      display:inline-grid; place-items:center;
-      border:none; cursor:pointer; border-radius:12px;
-      background:linear-gradient(180deg,#0e315a,#0a2a4a);
-      color:#eaf2ff; box-shadow:0 8px 22px rgba(0,0,0,.35);
-      border:1px solid #1e406e; padding:0; outline:none;
-    }
-    #dp_menu > button:before{
-      content:"\2261"; /* ≡ */
-      font-weight:700; font-size:18px; line-height:1;
-    }
-    #dp_menu.show > button:before{content:"\00D7";} /* × */
-
-    /* Dropdown */
+    #dp_menu > button{width:40px; height:40px; display:inline-grid; place-items:center; border:none; cursor:pointer; border-radius:12px; background:linear-gradient(180deg,#0e315a,#0a2a4a); color:#eaf2ff; box-shadow:0 8px 22px rgba(0,0,0,.35); border:1px solid #1e406e; padding:0; outline:none;}
+    #dp_menu > button:before{content:"\2261"; font-weight:700; font-size:18px; line-height:1;}
+    #dp_menu.show > button:before{content:"\00D7"}
     #dp_menu ul, #dp_menu li{margin:0; padding:0; list-style:none}
-    #dp_menu ul{
-      position:absolute; top:48px; right:0;
-      width:180px;
-      background:#ffffff;
-      color:#0c2544;
-      border:1px solid #dfe7f3;
-      border-radius:12px;
-      box-shadow:0 16px 34px rgba(3,16,36,.25);
-      overflow:hidden;
-      opacity:0; transform:translateY(6px) scale(.98);
-      pointer-events:none;
-      transition:opacity .18s ease, transform .18s ease;
-    }
-    #dp_menu.show ul{
-      opacity:1; transform:none; pointer-events:auto;
-    }
-
-    /* Mục menu */
-    #dp_menu li a{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      color:inherit; text-decoration:none; font-weight:700; font-size:14px;
-    }
+    #dp_menu ul{position:absolute; top:48px; right:0; width:180px; background:#fff; color:#0c2544; border:1px solid #dfe7f3; border-radius:12px; box-shadow:0 16px 34px rgba(3,16,36,.25); overflow:hidden; opacity:0; transform:translateY(6px) scale(.98); pointer-events:none; transition:opacity .18s ease, transform .18s ease;}
+    #dp_menu.show ul{opacity:1; transform:none; pointer-events:auto}
+    #dp_menu li a{display:flex; align-items:center; gap:10px; padding:10px 12px; color:inherit; text-decoration:none; font-weight:700; font-size:14px}
     #dp_menu li + li a{border-top:1px solid #eef3fb}
     #dp_menu li a .ico{width:18px; display:inline-grid; place-items:center; opacity:.9}
     #dp_menu li a:hover{background:#f3f7ff}
 
-    /* ===== Giữ nguyên toàn bộ CSS phần trò chơi ===== */
-    :root{
-      --bg:#0a1429; --panel:#0d1a33; --muted:#8fa3c7; --text:#e1eafc;
-      --line:#1d2c4a; --accent:#22d3ee; --accent2:#a78bfa;
-      --army-green:#2d5016; --army-dark:#1a2f0d; --army-light:#4a7c1f;
-      --tile1:#7a2a00; --tile2:#bf4b0a; --tileBorder:#ffc98b;
-      --tile:clamp(32px, 7vw, 44px); --gap:clamp(3px, 0.8vw, 5px);
-    }
-    *{box-sizing:border-box; margin:0; padding:0;}
-    html,body{height:100%;}
-    html{scroll-behavior:smooth;}
-    body{
-      background:radial-gradient(ellipse at top, #0f2248 0%, #0a142a 60%, var(--bg) 100%);
-      color:var(--text);
-      padding:12px;
-      overflow-x: hidden;
-      line-height:1.5;
-    }
-    .app{width:100%; max-width:1200px; margin:64px auto 0;} /* chừa chỗ cho menu */
-    .header {display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;text-align:center;}
-    .logo {width: 90px;height: 90px;border-radius: 50%;background: radial-gradient(circle at 30% 30%, #2d5016, #1a2f0d);border: 3px solid #ffc98b;display: flex;align-items: center;justify-content: center;box-shadow: 0 4px 12px rgba(0,0,0,0.35);overflow: hidden;}
-    .logo-img {width: 85%;height: 85%;object-fit: contain;border-radius: 50%;background-color: #fff;padding: 4px;box-shadow: inset 0 0 4px rgba(0,0,0,0.3);transition: transform 0.3s ease;}
-    .logo:hover .logo-img {transform: scale(1.05);}
-    .title-section {display:flex;flex-direction:column;align-items:center;}
-    .title {font-size: clamp(20px, 3vw, 28px);color:#fff;text-shadow: 0 2px 4px rgba(0,0,0,0.5);margin-bottom: 4px;text-align:center;}
-    .subtitle {font-size: clamp(13px, 1.8vw, 16px);color: #cfe0ff;text-align:center;}
+    /* Trò chơi */
+    :root{--bg:#0a1429; --panel:#0d1a33; --muted:#8fa3c7; --text:#e1eafc; --line:#1d2c4a; --accent:#22d3ee; --accent2:#a78bfa; --army-green:#2d5016; --army-dark:#1a2f0d; --army-light:#4a7c1f; --tile1:#7a2a00; --tile2:#bf4b0a; --tileBorder:#ffc98b; --tile:clamp(32px, 7vw, 44px); --gap:clamp(3px, 0.8vw, 5px);}
+    *{box-sizing:border-box; margin:0; padding:0}
+    .header {display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;text-align:center}
+    .logo {width: 90px;height: 90px;border-radius: 50%;background: radial-gradient(circle at 30% 30%, #2d5016, #1a2f0d);border: 3px solid #ffc98b;display: flex;align-items: center;justify-content: center;box-shadow: 0 4px 12px rgba(0,0,0,0.35);overflow: hidden}
+    .logo-img {width: 85%;height: 85%;object-fit: contain;border-radius: 50%;background-color: #fff;padding: 4px;box-shadow: inset 0 0 4px rgba(0,0,0,0.3);transition: transform 0.3s ease}
+    .logo:hover .logo-img {transform: scale(1.05)}
+    .title {font-size: clamp(20px, 3vw, 28px);color:#fff;text-shadow: 0 2px 4px rgba(0,0,0,0.5);margin-bottom: 4px;text-align:center}
+    .subtitle {font-size: clamp(13px, 1.8vw, 16px);color: #cfe0ff;text-align:center}
 
-    .main-container {display:flex;flex-direction:column;gap:16px;}
-    .keyword-section {display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:10px;}
-    .keyword-title {font-size: clamp(16px, 2vw, 20px);color: #ffc98b;margin: 0;text-align:center;}
-    .keyword-row {display:flex;gap: var(--gap);justify-content:center;flex-wrap:wrap;}
-    .keyword-cell {width: var(--tile);height: var(--tile);border-radius: 8px;border: 2px solid var(--tileBorder);display: grid;place-items: center;background: linear-gradient(135deg, var(--army-dark), var(--army-green));font-weight: 900;font-size: clamp(16px, 3.5vw, 20px);color: #ffc98b;text-shadow: 0 1px 2px #000;box-shadow: 0 4px 8px rgba(0,0,0,0.3);}
-    .keyword-cell.ready {box-shadow: 0 0 0 3px var(--accent) inset, 0 4px 8px rgba(0,0,0,0.3);}
+    .main-container {display:flex;flex-direction:column;gap:16px}
+    .keyword-section {display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:10px}
+    .keyword-title {font-size: clamp(16px, 2vw, 20px);color: #ffc98b;margin:0;text-align:center}
+    .keyword-row {display:flex;gap: var(--gap);justify-content:center;flex-wrap:wrap}
+    .keyword-cell {width: var(--tile);height: var(--tile);border-radius: 8px;border: 2px solid var(--tileBorder);display: grid;place-items: center;background: linear-gradient(135deg, var(--army-dark), var(--army-green));font-weight: 900;font-size: clamp(16px, 3.5vw, 20px);color: #ffc98b;text-shadow: 0 1px 2px #000;box-shadow: 0 4px 8px rgba(0,0,0,0.3)}
+    .keyword-cell.ready {box-shadow: 0 0 0 3px var(--accent) inset, 0 4px 8px rgba(0,0,0,0.3)}
 
-    .crossword-grid {display:grid;grid-template-columns:1fr;gap:16px;}
+    .crossword-grid {display:grid;grid-template-columns:1fr;gap:16px}
     @media (min-width: 900px) {.crossword-grid {grid-template-columns: 1fr 280px;}}
 
-    .questions-panel {background: linear-gradient(160deg, #0d1830, #0a1426);border: 1px solid #2a3a5a;border-radius: 12px;padding: 12px;box-shadow: 0 8px 24px rgba(0,0,0,0.4);position: relative;overflow: hidden;width: 100%;}
-    .questions-panel::before {content: '';position: absolute;top: 0;left: 0;right: 0;height: 4px;background: linear-gradient(90deg, var(--army-green), var(--army-light));}
-    .questions-title {margin: 0 0 12px;font-size: 18px;color: #ffc98b;text-align: center;width: 100%;font-weight: 600;line-height: 1.2;padding: 0 8px;}
-    .questions-list {display:grid;gap:12px;width:100%;}
+    .questions-panel {background: linear-gradient(160deg, #0d1830, #0a1426);border: 1px solid #2a3a5a;border-radius: 12px;padding: 12px;box-shadow: 0 8px 24px rgba(0,0,0,0.4);position: relative;overflow: hidden;width: 100%}
+    .questions-panel::before {content: '';position: absolute;top: 0;left: 0;right: 0;height: 4px;background: linear-gradient(90deg, var(--army-green), var(--army-light))}
+    .questions-title {margin: 0 0 12px;font-size: 18px;color: #ffc98b;text-align: center;width: 100%;font-weight: 600;line-height: 1.2;padding: 0 8px}
+    .questions-list {display:grid;gap:12px;width:100%}
 
-    .question-item {display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed #2a3a5a;border-radius:10px;transition: all .3s ease;cursor:pointer;background: rgba(255,255,255,0.03);width:100%;box-sizing: border-box;max-width:100%;overflow:hidden;}
-    @media (min-width: 768px){.question-item{display:grid;grid-template-columns:120px 1fr;align-items:start;gap:12px;}}
-    .question-item:hover {border-color:#3a4a7a;background: rgba(255,255,255,0.07);}
-    .question-item.solved {border-style: solid;border-color:#2a5c2a;background: rgba(42,92,42,0.15);}
+    .question-item {display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed #2a3a5a;border-radius:10px;transition: all .3s ease;cursor:pointer;background: rgba(255,255,255,0.03);width:100%;box-sizing:border-box;max-width:100%;overflow:hidden}
+    @media (min-width: 768px){.question-item{display:grid;grid-template-columns:120px 1fr;align-items:start;gap:12px}}
+    .question-item:hover {border-color:#3a4a7a;background: rgba(255,255,255,0.07)}
+    .question-item.solved {border-style: solid;border-color:#2a5c2a;background: rgba(42,92,42,0.15)}
 
-    .question-number {display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:0;width:100%;box-sizing:border-box;}
-    @media (min-width:768px){.question-number{justify-content:flex-start;margin-bottom:0;width:auto;min-width:120px;}}
-    .question-btn {padding:10px 14px;border:1px solid #3a4a6a;border-radius:8px;background: linear-gradient(135deg, #1a2f0d, #2d5016);color:#ffc98b;cursor:pointer;font-size:13px;font-family: Arial, sans-serif;white-space:nowrap;font-weight:600;box-shadow:0 2px 4px rgba(0,0,0,0.2);transition:all .2s;width:100%;max-width:120px;text-align:center;display:flex;align-items:center;justify-content:center;height:36.8px;box-sizing:border-box;}
-    @media (max-width:767px){.question-btn{max-width:100px;padding:8px 12px;font-size:12px;height:36px;}}
-    .question-btn:hover{border-color:#4a5a7a;transform: translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,0.3);}
+    .question-number {display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:0;width:100%;box-sizing:border-box}
+    @media (min-width:768px){.question-number{justify-content:flex-start;margin-bottom:0;width:auto;min-width:120px}}
+    .question-btn {padding:10px 14px;border:1px solid #3a4a6a;border-radius:8px;background: linear-gradient(135deg, #1a2f0d, #2d5016);color:#ffc98b;cursor:pointer;font-size:13px;font-family: Arial, sans-serif;white-space:nowrap;font-weight:600;box-shadow:0 2px 4px rgba(0,0,0,0.2);transition:all .2s;width:100%;max-width:120px;text-align:center;display:flex;align-items:center;justify-content:center;height:36.8px;box-sizing:border-box}
+    @media (max-width:767px){.question-btn{max-width:100px;padding:8px 12px;font-size:12px;height:36px}}
+    .question-btn:hover{border-color:#4a5a7a;transform: translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,0.3)}
 
-    .question-content {display:flex;flex-direction:column;gap:8px;width:100%;overflow:hidden;align-items:center;box-sizing:border-box;}
-    @media (min-width:768px){.question-content{align-items:flex-start;min-width:0;}}
-    .question-placeholder {color:#8fa3c7;font-style:italic;text-align:center;font-size:clamp(13px,1.6vw,15px);line-height:1.4;padding:4px 0;width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    @media (min-width:768px){.question-placeholder{text-align:left;white-space:normal;}}
+    .question-content {display:flex;flex-direction:column;gap:8px;width:100%;overflow:hidden;align-items:center;box-sizing:border-box}
+    @media (min-width:768px){.question-content{align-items:flex-start;min-width:0}}
+    .question-placeholder {color:#8fa3c7;font-style:italic;text-align:center;font-size:clamp(13px,1.6vw,15px);line-height:1.4;padding:4px 0;width:100%;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    @media (min-width:768px){.question-placeholder{text-align:left;white-space:normal}}
 
-    .answer-cells {display:flex;flex-wrap:nowrap;gap:var(--gap);overflow-x:auto;padding:4px 2px 8px 2px;width:100%;-webkit-overflow-scrolling:touch;justify-content:flex-start;box-sizing:border-box;}
-    .answer-cells::-webkit-scrollbar{height:6px;}
-    .answer-cells::-webkit-scrollbar-track{background: rgba(255,255,255,0.1);border-radius:3px;}
-    .answer-cells::-webkit-scrollbar-thumb{background: var(--army-light);border-radius:3px;}
-    .answer-cell {width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;letter-spacing:.06em;font-size:12px;background:linear-gradient(135deg,var(--tile2),var(--tile1));color:#FFFAF0;text-shadow:0 1px 2px #000;border:2px solid var(--tileBorder);box-shadow:0 2px 4px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.1);flex-shrink:0;min-width:0;}
-    @media (min-width:480px){.answer-cell{width:clamp(32px,7vw,40px);height:clamp(32px,7vw,40px);font-size:clamp(12px,2.8vw,16px);}}
-    .answer-cell.pivot {box-shadow:0 0 0 3px #40e0ff inset, 0 0 8px #1bdfff;}
-    .answer-cell.revealed {animation: pop .3s ease;}
+    .answer-cells {display:flex;flex-wrap:nowrap;gap:var(--gap);overflow-x:auto;padding:4px 2px 8px 2px;width:100%;-webkit-overflow-scrolling:touch;justify-content:flex-start;box-sizing:border-box}
+    .answer-cells::-webkit-scrollbar{height:6px}
+    .answer-cells::-webkit-scrollbar-track{background: rgba(255,255,255,0.1);border-radius:3px}
+    .answer-cells::-webkit-scrollbar-thumb{background: var(--army-light);border-radius:3px}
+    .answer-cell {width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;letter-spacing:.06em;font-size:12px;background:linear-gradient(135deg,var(--tile2),var(--tile1));color:#FFFAF0;text-shadow:0 1px 2px #000;border:2px solid var(--tileBorder);box-shadow:0 2px 4px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.1);flex-shrink:0;min-width:0}
+    @media (min-width:480px){.answer-cell{width:clamp(32px,7vw,40px);height:clamp(32px,7vw,40px);font-size:clamp(12px,2.8vw,16px)}}
+    .answer-cell.pivot {box-shadow:0 0 0 3px #40e0ff inset, 0 0 8px #1bdfff}
+    .answer-cell.revealed {animation: pop .3s ease}
     @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
 
-    .control-panel {background: linear-gradient(160deg, #0d1830, #0a1426);border:1px solid #2a3a5a;border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.4);display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;width:100%;box-sizing:border-box;}
-    .control-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background: linear-gradient(90deg, var(--accent), var(--accent2));}
-    .control-title{margin:0 0 12px;font-size:clamp(16px,2vw,20px);color:#ffc98b;text-align:center;width:100%;}
-    .control-section{display:flex;flex-direction:column;gap:10px;width:100%;}
-    .section-title{font-size:14px;color:#cfe0ff;margin-bottom:6px;}
-    .input-group{display:flex;flex-direction:column;gap:8px;width:100%;}
-    input[type="text"]{background:#0a1122;color:var(--text);border:1px solid #2a3a5a;border-radius:8px;padding:10px 12px;outline:none;font-size:14px;width:100%;transition:all .2s;box-sizing:border-box;}
-    input[type="text"]:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(34,211,238,.2);}
-    .btn-primary{background: linear-gradient(135deg,#0ea5e9,#22d3ee);color:#051018;border:none;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:clamp(13px,1.6vw,15px);box-shadow:0 4px 8px rgba(0,0,0,0.3);transition:all .2s;width:100%;box-sizing:border-box;}
-    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.4);}
-    .btn-secondary{background: linear-gradient(135deg,#1a2f0d,#2d5016);color:#ffc98b;border:1px solid #3a4a6a;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:clamp(13px,1.6vw,15px);box-shadow:0 4px 8px rgba(0,0,0,0.3);transition:all .2s;width:100%;box-sizing:border-box;}
-    .btn-secondary:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.4);}
-    .message{font-size:13px;color:var(--muted);text-align:center;line-height:1.4;}
+    .control-panel {background: linear-gradient(160deg, #0d1830, #0a1426);border:1px solid #2a3a5a;border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.4);display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;width:100%;box-sizing:border-box}
+    .control-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background: linear-gradient(90deg, var(--accent), var(--accent2))}
+    .control-title{margin:0 0 12px;font-size:clamp(16px,2vw,20px);color:#ffc98b;text-align:center;width:100%}
+    .control-section{display:flex;flex-direction:column;gap:10px;width:100%}
+    .section-title{font-size:14px;color:#cfe0ff;margin-bottom:6px}
+    .input-group{display:flex;flex-direction:column;gap:8px;width:100%}
+    input[type="text"]{background:#0a1122;color:#e1eafc;border:1px solid #2a3a5a;border-radius:8px;padding:10px 12px;outline:none;font-size:14px;width:100%;transition:all .2s;box-sizing:border-box}
+    input[type="text"]:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(34,211,238,.2)}
+    .btn-primary{background: linear-gradient(135deg,#0ea5e9,#22d3ee);color:#051018;border:none;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:clamp(13px,1.6vw,15px);box-shadow:0 4px 8px rgba(0,0,0,0.3);transition:all .2s;width:100%;box-sizing:border-box}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.4)}
+    .btn-secondary{background: linear-gradient(135deg,#1a2f0d,#2d5016);color:#ffc98b;border:1px solid #3a4a6a;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:clamp(13px,1.6vw,15px);box-shadow:0 4px 8px rgba(0,0,0,0.3);transition:all .2s;width:100%;box-sizing:border-box}
+    .btn-secondary:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.4)}
+    .message{font-size:13px;color:#8fa3c7;text-align:center;line-height:1.4}
 
-    .qa-panel{margin-top:16px;display:none;width:100%;}
-    .qa-panel.active{display:block;animation: fadeIn .3s ease;}
+    .qa-panel{margin-top:16px;display:none;width:100%}
+    .qa-panel.active{display:block;animation: fadeIn .3s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    .qa-question{padding:14px 16px;border:1px solid #2a3a5a;border-radius:10px;background: rgba(10,17,34,.7);font-size:clamp(14px,1.6vw,16px);line-height:1.5;margin-bottom:14px;width:100%;box-sizing:border-box;}
-    .qa-controls{display:flex;flex-direction:column;gap:10px;width:100%;}
-    .qa-input-group{display:flex;gap:8px;flex-wrap:wrap;width:100%;}
+    .qa-question{padding:14px 16px;border:1px solid #2a3a5a;border-radius:10px;background: rgba(10,17,34,.7);font-size:clamp(14px,1.6vw,16px);line-height:1.5;margin-bottom:14px;width:100%;box-sizing:border-box}
+    .qa-controls{display:flex;flex-direction:column;gap:10px;width:100%}
+    .qa-input-group{display:flex;gap:8px;flex-wrap:wrap;width:100%}
     @media (max-width:480px){.qa-input-group{flex-direction:column}.qa-input-group button{width:100%}}
-    .qa-feedback{font-size:13px;color:var(--muted);min-height:18px;text-align:center;}
+    .qa-feedback{font-size:13px;color:#8fa3c7;min-height:18px;text-align:center}
 
-    .answers-panel{margin-top:20px;display:none;width:100%;}
-    .answers-panel.active{display:block;animation: fadeIn .5s ease;}
-    .answers-title{margin:0 0 14px;font-size:clamp(16px,2vw,20px);color:#ffc98b;text-align:center;width:100%;}
-    .answer-item{margin-bottom:14px;padding:14px;border-radius:8px;background: rgba(255,255,255,.05);border-left:4px solid var(--army-light);width:100%;box-sizing:border-box;}
-    .answer-question{font-weight:bold;margin-bottom:6px;font-size:clamp(13px,1.6vw,15px);color:#cfe0ff;}
-    .answer-text{color:var(--accent);font-size:clamp(13px,1.6vw,15px);font-weight:600;}
+    .answers-panel{margin-top:20px;display:none;width:100%}
+    .answers-panel.active{display:block;animation: fadeIn .5s ease}
+    .answers-title{margin:0 0 14px;font-size:clamp(16px,2vw,20px);color:#ffc98b;text-align:center;width:100%}
+    .answer-item{margin-bottom:14px;padding:14px;border-radius:8px;background: rgba(255,255,255,.05);border-left:4px solid var(--army-light);width:100%;box-sizing:border-box}
+    .answer-question{font-weight:bold;margin-bottom:6px;font-size:clamp(13px,1.6vw,15px);color:#cfe0ff}
+    .answer-text{color:var(--accent);font-size:clamp(13px,1.6vw,15px);font-weight:600}
 
-    .footer{margin-top:20px;display:flex;flex-direction:column;gap:12px;color:#8fa3c7;font-size:12px;border-top:1px solid #2a3a5a;padding-top:12px;width:100%;}
-    .footer-tip{text-align:center;line-height:1.5;width:100%;}
-    .footer-controls{display:flex;justify-content:center;gap:10px;width:100%;}
+    .footer{margin-top:20px;display:flex;flex-direction:column;gap:12px;color:#8fa3c7;font-size:12px;border-top:1px solid #2a3a5a;padding-top:12px;width:100%}
+    .footer-tip{text-align:center;line-height:1.5;width:100%}
 
-    .ladder{display:grid;grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));gap:8px;width:100%;}
+    .ladder{display:grid;grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));gap:8px;width:100%}
 
-    .shake{animation: shake .4s ease;}
+    .shake{animation: shake .4s ease}
     @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
 
     @media (max-width:767px){
       .questions-panel{padding:10px}
       .question-item{padding:10px;gap:6px}
       .footer-controls{flex-direction:column;align-items:center}
-      .ladder{grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));}
+      .ladder{grid-template-columns: repeat(auto-fill, minmax(60px, 1fr))}
       .control-panel{padding:12px}
       .questions-title{font-size:16px;margin:0 0 12px;padding:0 4px}
       .question-content{padding:0 4px}
       .answer-cells{padding:4px 1px 8px 1px}
     }
+
+    /* Nhấn mạnh hạt nổ nhỏ */
+    .burst circle{filter: drop-shadow(0 0 6px #ffffff); mix-blend-mode: screen}
   </style>
 </head>
 <body>
-  <!-- ===== MENU GỌN ĐẸP ===== -->
-   <nav id="dp_menu" aria-label="Menu chính">
+  <!-- MENU -->
+  <nav id="dp_menu" aria-label="Menu chính">
     <button id="dp_toggle" type="button" aria-expanded="false" aria-controls="dp_list"></button>
     <ul id="dp_list" class="sub-menu" role="menu" aria-hidden="false">
-      <li role="menuitem"><a href="https://thanhhungk57.github.io/baotuong/" target="_blank"><span class="ico">🏠</span><span>Trang chính</span></a></li>
-      <li role="menuitem"><a href="#" onclick="restart(); return false;"><span class="ico">🔁</span><span>Chơi lại</span></a></li>
-      <li role="menuitem"><a href="#" onclick="showAllAnswers(); document.getElementById('answersPanel').scrollIntoView({behavior:'smooth'}); return false;"><span class="ico">✅</span><span>Hiển thị đáp án</span></a></li>
-      <li role="menuitem"><a href="#" onclick="showRules(); return false;"><span class="ico">📜</span><span>Xem luật chơi</span></a></li>
-      <li role="menuitem"><a href="#" onclick="document.getElementById('keyword').scrollIntoView({behavior:'smooth'}); return false;"><span class="ico">🧩</span><span>Từ khóa dọc</span></a></li>
+<li role="menuitem">
+  <a href="https://thanhhungk57.github.io/baotuong/"  return false;">
+    <span class="ico">🏠</span><span>Trang chính</span>
+  </a>
+</li>
+
+      <li role="menuitem"><a href="#" onclick="restart();dpCloseMenu(); return false;"><span class="ico">🔁</span><span>Chơi lại</span></a></li>
+      <li role="menuitem"><a href="#" onclick="showAllAnswers();dpCloseMenu(); document.getElementById('answersPanel').scrollIntoView({behavior:'smooth'}); return false;"><span class="ico">✅</span><span>Hiển thị đáp án</span></a></li>
+      <li role="menuitem"><a href="#" onclick="showRules();dpCloseMenu(); return false;"><span class="ico">📜</span><span>Xem luật chơi</span></a></li>
     </ul>
   </nav>
 
-  <div class="app">
+
+  
+  <div class="app" id="home">
     <div class="header">
       <div class="logo"><img src="logodoan.png" alt="Logo Quân Đội" class="logo-img"></div>
       <div class="title-section">
@@ -234,64 +191,79 @@
 
         <aside class="control-panel">
           <h2 class="control-title">ĐIỀU KHIỂN</h2>
-
           <div class="control-section">
             <div class="section-title">Chọn câu hỏi</div>
             <div id="ladder" class="ladder"></div>
           </div>
-
           <div class="control-section">
             <div class="section-title">Hướng dẫn</div>
-            <div class="message">
-              Từ khóa dọc được tạo thành từ các chữ cái giao nhau của đáp án ngang.
-            </div>
+            <div class="message">Từ khóa dọc được tạo thành từ các chữ cái giao nhau của đáp án ngang.</div>
             <button id="btnRestart" class="btn-secondary">CHƠI LẠI</button>
           </div>
         </aside>
       </div>
 
       <div class="footer">
-        <div class="footer-tip">
-          <b>Mẹo chơi:</b> Mỗi đáp án đúng sẽ tiết lộ một chữ cái trong từ khóa dọc. Hãy quan sát kỹ vị trí các chữ cái giao nhau.
-        </div>
+        <div class="footer-tip"><b>Mẹo chơi:</b> Mỗi đáp án đúng sẽ tiết lộ một chữ cái trong từ khóa dọc. Hãy quan sát kỹ vị trí các chữ cái giao nhau.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal luật chơi -->
+  <div id="rulesModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(180deg,#0d203f,#08172e);color:#eaf2ff;border:1px solid #2a4f88;border-radius:14px;padding:24px;max-width:480px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:left;line-height:1.6;">
+      <h2 style="margin-top:0;text-align:center;color:#4ad1ff;">📜 Luật chơi Ô Chữ</h2>
+      <ul style="padding-left:20px;margin:0;">
+        <li>Mỗi câu hỏi tương ứng với một hàng ô chữ ngang.</li>
+        <li>Khi trả lời đúng, toàn bộ hàng ô chữ sẽ được mở ra.</li>
+        <li>Mỗi hàng có một ô giao cắt với từ khóa dọc — ký tự này sẽ được tiết lộ.</li>
+        <li>Khi đã biết đủ các chữ cái, hãy nhập từ khóa dọc để chiến thắng!</li>
+        <li>Bấm “Chơi lại” để bắt đầu ván mới.</li>
+      </ul>
+      <div style="text-align:center;margin-top:18px;">
+        <button onclick="closeRules();" style="background:linear-gradient(180deg,#2e90ff,#1b6cd6);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Box -->
+  <div id="infoBox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:3000; align-items:center; justify-content:center;">
+    <div style="background:linear-gradient(180deg,#0d203f,#08172e); border:1px solid #2a4f88; border-radius:14px; padding:24px; max-width:600px; width:90%; box-shadow:0 8px 30px rgba(0,0,0,0.6); color:#fff; line-height:1.6;">
+      <h2 id="infoTitle" style="text-align:center;color:#ffc98b;margin-top:0;"></h2>
+      <img id="infoImage" src="" alt="" style="width:100%;border-radius:8px;margin:12px 0;display:none;">
+      <p id="infoContent"></p>
+      <div style="text-align:center;margin-top:18px;">
+        <button onclick="closeInfoBox()" style="background:linear-gradient(180deg,#2e90ff,#1b6cd6);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">Đóng</button>
       </div>
     </div>
   </div>
 
 <script>
-/* ====== Toggle cho MENU GỌN ====== */
+/* ====== Menu toggle ====== */
 (function(){
   const nav = document.getElementById('dp_menu');
   const btn = document.getElementById('dp_toggle');
   const list = document.getElementById('dp_list');
-
   function setState(open){
     nav.classList.toggle('show', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     list.setAttribute('aria-hidden', open ? 'false' : 'true');
   }
-
-  btn.addEventListener('click', ()=>{
-    const open = !nav.classList.contains('show');
-    setState(open);
-  });
-
-  document.addEventListener('click', (e)=>{
-    if(!nav.contains(e.target)){
-      setState(false);
-    }
-  });
-
-  // Đóng bằng phím ESC
-  document.addEventListener('keydown',(e)=>{
-    if(e.key==='Escape'){ setState(false); }
-  });
-
-  // Khởi tạo: đóng
+  btn.addEventListener('click', ()=> setState(!nav.classList.contains('show')) );
+  document.addEventListener('click', (e)=>{ if(!nav.contains(e.target)) setState(false) });
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') setState(false) });
   setState(false);
 })();
+function dpCloseMenu(){
+  const nav  = document.getElementById('dp_menu');
+  const btn  = document.getElementById('dp_toggle');
+  const list = document.getElementById('dp_list');
+  nav.classList.remove('show');
+  btn.setAttribute('aria-expanded','false');
+  list.setAttribute('aria-hidden','true');
+};
 
-/* ====== DATA & LOGIC Ô CHỮ (giữ nguyên tinh thần file gốc) ====== */
+/* ====== DATA ====== */
 const DATA = {
   keyword: "BỘĐỘICỤHỒ",
   rows: [
@@ -299,7 +271,7 @@ const DATA = {
     { q: "Thành phố nào là địa điểm diễn ra chiến thắng 'Điện Biên Phủ trên không' năm 1972?", a: "HÀ NỘI", pick: 3, crossAt: 1 },
     { q: "Câu thơ “Trận Điện Biên Phủ lẫy lừng / Thân làm nên vinh quang của anh hùng” nói về ai?", a: "BẾ VĂN ĐÀN", pick: 5, crossAt: 2 },
     { q: "Thủ lĩnh cuộc khởi nghĩa Thái Nguyên năm 1917, còn gọi là Trịnh Văn Cấn, là ai?", a: "ĐỘI CẤN", pick: 1, crossAt: 3 },
-    { q: "Ai là người anh hùng đã lấy thân mình chèn pháo trong chiến dịch Điện Biên Phủ năm 1954?",a: "TÔ VĨNH DIỆN", pick: 7, crossAt: 4 },
+    { q: "Ai là người anh hùng đã lấy thân mình chèn pháo trong chiến dịch Điện Biên Phủ năm 1954?", a: "TÔ VĨNH DIỆN", pick: 7, crossAt: 4 },
     { q: "Nguyễn Tất Thành lấy tên là Nguyễn Ái Quốc vào năm 1919 ở đâu?", a: "VECXAY", pick: 2, crossAt: 5 },
     { q: "Cấu trúc nửa chìm nửa nổi, có lỗ bắn ra các hướng, cửa quay vào trong, gọi là gì?", a: "Ụ SÚNG", pick: 0, crossAt: 6 },
     { q: "Nguyễn Ái Quốc thành lập Hội Việt Nam Cách mạng Thanh niên ở đâu?", a: "QUẢNG CHÂU", pick: 6, crossAt: 7 },
@@ -307,6 +279,55 @@ const DATA = {
   ]
 };
 
+const DATA2 = {
+  "ĐIỆN BIÊN PHỦ": {
+    title: "Chiến thắng Điện Biên Phủ (1954)",
+    content: "Chiến thắng Điện Biên Phủ ngày 7/5/1954 là mốc son chói lọi trong lịch sử dân tộc Việt Nam, kết thúc thắng lợi cuộc kháng chiến chống thực dân Pháp, buộc Pháp phải ký Hiệp định Genève, công nhận độc lập, chủ quyền, thống nhất và toàn vẹn lãnh thổ của Việt Nam.",
+    image: "Dien_Bien_Phu.jpg"
+  },
+  "HÀ NỘI": {
+    title: "Chiến thắng 'Điện Biên Phủ trên không' (1972)",
+    content: "Trong 12 ngày đêm cuối năm 1972, quân và dân Thủ đô Hà Nội đã anh dũng đánh bại cuộc tập kích chiến lược bằng B-52 của Mỹ, làm nên chiến thắng 'Điện Biên Phủ trên không', buộc Mỹ ký Hiệp định Paris.",
+    image: "B52_Hanoi_1972.jpg"
+  },
+  "BẾ VĂN ĐÀN": {
+    title: "Anh hùng liệt sĩ Bế Văn Đàn",
+    content: "Bế Văn Đàn (1921–1954) là chiến sĩ QĐND Việt Nam, dùng vai làm giá súng cho đồng đội bắn tiêu diệt địch trong chiến dịch Điện Biên Phủ.",
+    image: "Be_Van_Dan_statue.jpg"
+  },
+  "ĐỘI CẤN": {
+    title: "Lãnh tụ khởi nghĩa Thái Nguyên",
+    content: "Đội Cấn (Trịnh Văn Cấn, 1881–1917) lãnh đạo cuộc khởi nghĩa Thái Nguyên, một trong những cuộc nổi dậy lớn đầu thế kỷ XX.",
+    image: "Thai_Nguyen_revolt.jpg"
+  },
+  "TÔ VĨNH DIỆN": {
+    title: "Anh hùng liệt sĩ Tô Vĩnh Diện",
+    content: "Trong chiến dịch Điện Biên Phủ, khi pháo trượt xuống vực, anh đã lấy thân mình chèn pháo, hy sinh để cứu vũ khí cho đơn vị.",
+    image: "To_Vinh_Dien_statue.jpg"
+  },
+  "VECXAY": {
+    title: "Hội nghị Versailles 1919",
+    content: "Năm 1919, Nguyễn Tất Thành lấy tên Nguyễn Ái Quốc và gửi 'Yêu sách của nhân dân An Nam' tới Hội nghị Versailles.",
+    image: "Treaty_of_Versailles_signing.jpg"
+  },
+  "Ụ SÚNG": {
+    title: "Công sự phòng thủ — ụ súng",
+    content: "Ụ súng là cấu trúc nửa chìm nửa nổi, che chắn xạ thủ và tăng khả năng phòng thủ trong chiến đấu.",
+    image: "Bunker_Military.jpg"
+  },
+  "QUẢNG CHÂU": {
+    title: "Nơi thành lập Hội VN Cách mạng Thanh niên",
+    content: "Năm 1925, Nguyễn Ái Quốc thành lập Hội VN Cách mạng Thanh niên tại Quảng Châu (Trung Quốc).",
+    image: "Guangzhou_old_town.jpg"
+  },
+  "HỒ CHÍ MINH": {
+    title: "Chiến dịch Hồ Chí Minh (1975)",
+    content: "Chiến dịch Hồ Chí Minh mùa xuân 1975 kết thúc thắng lợi với sự kiện 30/4, thống nhất đất nước.",
+    image: "Tanks_at_Presidential_Palace_Saigon_1975.jpg"
+  }
+};
+
+/* ====== Helpers ====== */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 function normalizeVN(str){ return (str||'').toUpperCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/Đ/g,'D') }
@@ -319,10 +340,10 @@ let solved = new Set();
 let acroLetters = [];
 let keywordSolved = false;
 
+/* ====== Build UI ====== */
 function build(){
   const keyword = $('#keyword'); keyword.innerHTML='';
   const L = keyNormalized().length; acroLetters = Array(L).fill('?');
-
   for(let i=0;i<L;i++){
     const s = document.createElement('div');
     s.className='keyword-cell'; s.dataset.col=i; s.textContent='?';
@@ -338,9 +359,7 @@ function build(){
     const answerCells = document.createElement('div'); answerCells.className = 'answer-cells';
     const disp = stripSpaces(toUpperKeepVN(item.a));
     for(let i=0;i<disp.length;i++){
-      const span = document.createElement('div'); span.className = 'answer-cell'; span.dataset.col = i;
-      if(i===item.pick) span.classList.add('pivot');
-      span.textContent = '·'; answerCells.appendChild(span);
+      const span = document.createElement('div'); span.className = 'answer-cell'; span.dataset.col = i; if(i===item.pick) span.classList.add('pivot'); span.textContent = '·'; answerCells.appendChild(span);
     }
     questionContent.appendChild(questionPlaceholder);
     questionContent.appendChild(answerCells);
@@ -354,17 +373,11 @@ function build(){
     const step = document.createElement('button'); step.className='btn-secondary'; step.dataset.open=i; step.textContent = `CÂU ${i+1}`; ladder.appendChild(step);
   }
 
-  const msg = $('#finalMsg');
-  msg.textContent = "Trả lời đúng mỗi câu hỏi sẽ hé lộ một chữ cái trong từ khóa";
-
+  $('#finalMsg').textContent = "Trả lời đúng mỗi câu hỏi sẽ hé lộ một chữ cái trong từ khóa";
   $('#answersPanel').classList.remove('active');
 }
 
-function scrollToKeyword(){
-  const el = $('#keyword');
-  if(!el) return;
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+function scrollToKeyword(){ const el = $('#keyword'); if(!el) return; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
 function openQA(idx){
   currentRow = idx;
@@ -382,20 +395,31 @@ function checkAnswer(){
   const user = stripSpaces(normalizeVN($('#answer').value));
   if(!user){ $('#feedback').textContent='Vui lòng nhập đáp án!'; return; }
   const ok = user === stripSpaces(normalizeVN(row.a));
-  if(ok){
+
+  if (ok) {
     revealRow(currentRow);
-    $('#feedback').textContent='Chính xác! Đáp án đã được hiển thị.';
-    setTimeout(() => { $('#qa').classList.remove('active'); currentRow = null; }, 1200);
+    const idx = currentRow;
+    const answerText = DATA.rows[idx].a;
+
+    // Hiệu ứng nhỏ xong mới mở info
+    celebrateSmall().then(() => {
+      showInfo(answerText);
+      setTimeout(() => {
+        $('#qa').classList.remove('active');
+        currentRow = null;
+      }, 200);
+    });
+
+    $('#feedback').textContent = 'Chính xác! Đáp án đã được hiển thị.';
     setTimeout(scrollToKeyword, 1300);
   } else {
-    $('#feedback').textContent='Chưa chính xác. Hãy thử lại!';
+    $('#feedback').textContent = 'Chưa chính xác. Hãy thử lại!';
     $('#answer').classList.add('shake'); setTimeout(()=>$('#answer').classList.remove('shake'),400);
   }
 }
 
 function revealRow(idx){
-  const questionItem = document.querySelector(`.question-item[data-idx="${idx}"]`);
-  if(!questionItem) return;
+  const questionItem = document.querySelector(`.question-item[data-idx="${idx}"]`); if(!questionItem) return;
   const row = DATA.rows[idx];
   const cells = questionItem.querySelectorAll('.answer-cell');
   const disp = stripSpaces(toUpperKeepVN(row.a));
@@ -413,20 +437,13 @@ function revealRow(idx){
 }
 
 function restart(){
-  currentRow=null; solved=new Set(); keywordSolved=false;
-  build();
-
-function showRules(){
-  document.getElementById('rulesModal').style.display='flex';
-}
-function closeRules(){
-  document.getElementById('rulesModal').style.display='none';
-}
- document.getElementById('qa').classList.remove('active');
+  currentRow=null; solved=new Set(); keywordSolved=false; build();
+  document.getElementById('qa').classList.remove('active');
   document.getElementById('finalGuess').value='';
   document.getElementById('finalMsg').textContent='Trả lời đúng mỗi câu hỏi sẽ hé lộ một chữ cái trong từ khóa';
 }
 
+/* ====== TỪ KHÓA ====== */
 function guessFinal(){
   const guess = stripSpaces(normalizeVN(document.getElementById('finalGuess').value));
   if(!guess){ document.getElementById('finalMsg').textContent='Nhập từ khóa cần đoán nhé!'; return; }
@@ -436,7 +453,7 @@ function guessFinal(){
     DATA.rows.forEach((_, i)=>{ if(!solved.has(i)) revealRow(i); });
     document.querySelectorAll('.question-item').forEach(q=>{ q.style.display = 'block'; q.classList.add('revealed'); });
     document.getElementById('finalMsg').textContent = 'Tuyệt vời! Bạn đã đoán đúng từ khóa: ' + DATA.keyword;
-    celebrate();
+    celebrateWin();
   } else {
     document.getElementById('finalMsg').textContent = 'Chưa đúng. Thử lại nhé!';
   }
@@ -452,9 +469,8 @@ function fillKeyword(target){
   }
 }
 
-function showAllAnswers() {
-  const answersList = document.getElementById('answersList');
-  answersList.innerHTML = '';
+function showAllAnswers(){
+  const answersList = document.getElementById('answersList'); answersList.innerHTML = '';
   DATA.rows.forEach((item, idx) => {
     const answerItem = document.createElement('div');
     answerItem.className = 'answer-item';
@@ -464,9 +480,11 @@ function showAllAnswers() {
   document.getElementById('answersPanel').classList.add('active');
 }
 
+/* ====== Hiệu ứng ====== */
 function celebrate(){
   const confetti=document.createElement('div');
   confetti.className = 'confetti';
+  confetti.style.cssText = 'position:fixed; inset:0; z-index:5000; pointer-events:none;';
   confetti.innerHTML = `<svg width="100%" height="100%" preserveAspectRatio="none">
     ${[...Array(100)].map(()=>{
       const x=Math.random()*100,d=6+Math.random()*10,dur=2+Math.random()*1.8;
@@ -479,44 +497,76 @@ function celebrate(){
   setTimeout(()=>confetti.remove(),3500);
 }
 
-document.getElementById('questions').addEventListener('click', e=>{
-  const item=e.target.closest('.question-item');
-  if(item){ openQA(+item.dataset.idx); }
-});
-document.getElementById('btnCheck').addEventListener('click', checkAnswer);
-document.getElementById('answer').addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer(); });
-document.getElementById('btnClose').addEventListener('click', ()=>{ document.getElementById('qa').classList.remove('active'); currentRow=null; scrollToKeyword(); });
-document.getElementById('btnRestart').addEventListener('click', restart);
-document.getElementById('btnFinal').addEventListener('click', guessFinal);
-document.getElementById('ladder').addEventListener('click', e=>{ const step=e.target.closest('button[data-open]'); if(step){ openQA(+step.dataset.open); } });
+// Hiệu ứng mini — đảm bảo hiển thị trên cùng & full màn
+function celebrateSmall(){
+  return new Promise((resolve) => {
+    const DURATION = 2200; // dài hơn max animation (~2s)
+    const burst = document.createElement('div');
+    burst.className='burst';
+    burst.style.cssText = 'position:fixed; inset:0; z-index:4500; pointer-events:none;';
+    burst.innerHTML=`<svg width="100%" height="100%" preserveAspectRatio="none">
+      ${[...Array(30)].map(()=>{const x=Math.random()*100,y=Math.random()*10,d=1+Math.random();return `<circle cx="${x}%" cy="${y}%" r="3" fill="hsl(${Math.random()*360},80%,60%)" style="animation:fly ${d}s ease-out forwards;"/>`;}).join('')}
+      <style>@keyframes fly{to{transform:translateY(80vh) scale(0.8);opacity:0}}</style>
+    </svg>`;
+    document.body.appendChild(burst);
+    setTimeout(()=>{ burst.remove(); resolve(); }, DURATION);
+  });
+}
 
+function showInfo(answer){
+  const info = DATA2[answer];
+  if(!info) return;
+  document.getElementById('infoTitle').textContent = info.title || '';
+  document.getElementById('infoContent').textContent = info.content || '';
+  const img = document.getElementById('infoImage');
+
+  // Fallback ảnh + retry khi online
+  let pendingUrl = info.image || null;
+  const FALLBACK_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect width="100%" height="100%" fill="#0d203f"/><text x="50%" y="50%" fill="#cfe0ff" font-size="24" font-family="Arial, sans-serif" dominant-baseline="middle" text-anchor="middle">Không thể tải ảnh (offline)</text></svg>`
+  );
+  function setInfoImage(url){
+    img.onload = ()=>{ img.style.display='block'; };
+    img.onerror = ()=>{ if (img.src !== FALLBACK_SVG) { img.src = FALLBACK_SVG; } img.style.display='block'; };
+    img.src = url;
+  }
+  if (pendingUrl && navigator.onLine){ setInfoImage(pendingUrl); } else { setInfoImage(FALLBACK_SVG); }
+  window.addEventListener('online', ()=>{ if (pendingUrl) setInfoImage(pendingUrl); }, {once:true});
+
+  document.getElementById('infoBox').style.display='flex';
+}
+function closeInfoBox(){ document.getElementById('infoBox').style.display='none'; }
+
+function celebrateBig(){
+  const overlay = document.createElement('div');
+  overlay.style = ["position:fixed","inset:0","background:rgba(0,0,0,0.6)","z-index:5000","display:flex","align-items:center","justify-content:center","flex-direction:column","animation: fadeOut 4s ease forwards"].join(';');
+  overlay.innerHTML = `
+    <h1 style="color:#ffd700;font-size:clamp(40px,6vw,70px);text-shadow:0 0 20px #fff,0 0 40px #ff9;font-weight:900;margin:0 12px;">🎉 XUẤT SẮC 🎉</h1>
+    <svg width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;inset:0;">
+      ${[...Array(160)].map(()=>`<circle cx='${Math.random()*100}%' cy='${Math.random()*10}%' r='4' fill='hsl(${Math.random()*360},90%,60%)' style='animation:fly 3s ease-out forwards;'/>`).join('')}
+      <style>@keyframes fly{to{transform:translateY(100vh) scale(.6);opacity:0}}@keyframes fadeOut{0%,90%{opacity:1}100%{opacity:0}}</style>
+    </svg>`;
+  document.body.appendChild(overlay);
+  setTimeout(()=>overlay.remove(),4000);
+}
+
+function celebrateWin(){ celebrate(); setTimeout(celebrateBig, 800); }
+
+/* ====== Sự kiện ====== */
+function showRules(){ document.getElementById('rulesModal').style.display='flex'; }
+function closeRules(){ document.getElementById('rulesModal').style.display='none'; }
+
+// Listeners
+$('#questions').addEventListener('click', e=>{ const item=e.target.closest('.question-item'); if(item){ openQA(+item.dataset.idx); }});
+$('#btnCheck').addEventListener('click', checkAnswer);
+$('#answer').addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer(); });
+$('#btnClose').addEventListener('click', ()=>{ $('#qa').classList.remove('active'); currentRow=null; scrollToKeyword(); });
+$('#btnRestart').addEventListener('click', restart);
+$('#btnFinal').addEventListener('click', guessFinal);
+$('#ladder').addEventListener('click', e=>{ const step=e.target.closest('button[data-open]'); if(step){ openQA(+step.dataset.open); } });
+
+// Init
 build();
-
-function showRules(){
-  document.getElementById('rulesModal').style.display='flex';
-}
-function closeRules(){
-  document.getElementById('rulesModal').style.display='none';
-}
-
 </script>
-
-<div id="rulesModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;align-items:center;justify-content:center;">
-  <div style="background:linear-gradient(180deg,#0d203f,#08172e);color:#eaf2ff;border:1px solid #2a4f88;border-radius:14px;padding:24px;max-width:480px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:left;line-height:1.6;">
-    <h2 style="margin-top:0;text-align:center;color:#4ad1ff;">📜 Luật chơi Ô Chữ</h2>
-    <ul style="padding-left:20px;margin:0;">
-      <li>Mỗi câu hỏi tương ứng với một hàng ô chữ ngang.</li>
-      <li>Khi trả lời đúng, toàn bộ hàng ô chữ sẽ được mở ra.</li>
-      <li>Mỗi hàng có một ô giao cắt với từ khóa dọc — ký tự này sẽ được tiết lộ.</li>
-      <li>Khi đã biết đủ các chữ cái, hãy nhập từ khóa dọc để chiến thắng!</li>
-      <li>Bấm “Chơi lại” để bắt đầu ván mới.</li>
-    </ul>
-    <div style="text-align:center;margin-top:18px;">
-      <button onclick="closeRules();" style="background:linear-gradient(180deg,#2e90ff,#1b6cd6);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">Đã hiểu</button>
-    </div>
-  </div>
-</div>
-
-
 </body>
 </html>

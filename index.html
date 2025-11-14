@@ -66,6 +66,7 @@
     background: radial-gradient(70px 36px at 20% 60%, var(--glow) 0%, transparent 60%),
                 radial-gradient(110px 54px at 60% 40%, var(--glow2) 0%, transparent 70%);
     opacity:.22; filter: blur(18px);
+    pointer-events:none; /* QUAN TRỌNG: không chặn click/tap */
   }
   @media (hover:hover){
     .card:hover{ transform: translateY(-3px); border-color:#4a84db; box-shadow:0 22px 55px rgba(0,0,0,.45) }
@@ -86,6 +87,7 @@
     content:"";
     position:absolute; inset:0;
     background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.45));
+    pointer-events:none; /* lớp phủ không ăn touch */
   }
   .thumb .emoji{
     font-size:52px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.35)); z-index:1;
@@ -101,6 +103,7 @@
     background:linear-gradient(180deg,#39b8ff,#2e90ff);
     padding:14px; border-radius:12px; box-shadow:0 8px 18px rgba(46,144,255,.35);
     min-height:48px;
+    position:relative; z-index:2; /* đảm bảo luôn bấm được */
   }
   .btn:active{ transform: translateY(1px) }
   .meta{font-size:12px; color:var(--muted); border:1px solid #294f86; padding:8px 10px; border-radius:10px}
@@ -121,7 +124,7 @@
           <div class="tag">Học viện Kĩ thuật Quân sự</div>
         </div>
       </div>
-      <div class="tag">QuyếtThắng</div>
+      <div class="tag">#QuyếtThắng</div>
     </header>
 
     <section class="grid">

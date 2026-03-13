@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Bảo dưỡng Trang bị Kỹ thuật</title>
+    <!-- Thư viện React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .transition-all-300 { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-effect { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body class="bg-slate-50 overflow-x-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- Mock Data ---
+        const INITIAL_EQUIPMENTS = [
+            { id: 'XT-2034', name: 'Xe tải quân sự Zil-131', type: 'Ô tô vận tải', unit: 'Tiểu đoàn 3', date: '2020-05-15', status: 'Hoạt động', health: 95 },
+            { id: 'MP-500', name: 'Máy phát điện Diesel 500kW', type: 'Thiết bị nguồn', unit: 'Tiểu đoàn 1', date: '2021-10-10', status: 'Cần bảo dưỡng', health: 65 },
+            { id: 'XT-1102', name: 'Xe Jeep chỉ huy', type: 'Xe chỉ huy', unit: 'Phòng kỹ thuật', date: '2023-01-20', status: 'Đang sửa', health: 30 },
+            { id: 'TL-99', name: 'Thiết bị đo đa năng', type: 'Điện tử', unit: 'Tiểu đoàn 2', date: '2020-03-05', status: 'Hoạt động', health: 88 },
+            { id: 'RX-77', name: 'Radar cảnh giới', type: 'Vô tuyến điện', unit: 'Trạm Radar 1', date: '2019-12-12', status: 'Hoạt động', health: 92 },
+            { id: 'XT-556', name: 'Xe bọc thép BTR-60', type: 'Xe chiến đấu', unit: 'Đại đội 4', date: '2021-02-28', status: 'Cần bảo dưỡng', health: 70 }
+        ];
+
+        const INITIAL_SCHEDULE = [
+            { id: 1, equipId: 'XT-2034', task: 'Thay dầu động cơ & lọc nhớt', date: '2024-03-25', priority: 'Cao', status: 'Sắp tới' },
+            { id: 2, equipId: 'MP-500', task: 'Kiểm tra hệ thống làm mát', date: '2024-03-15', priority: 'Trung bình', status: 'Đang thực hiện' },
+            { id: 3, equipId: 'XT-1102', task: 'Bảo dưỡng hệ thống phanh', date: '2024-03-05', priority: 'Khẩn cấp', status: 'Quá hạn' },
+            { id: 4, equipId: 'RX-77', task: 'Kiểm chuẩn định kỳ', date: '2024-04-10', priority: 'Thấp', status: 'Sắp tới' }
+        ];
+
+        const REPAIR_HISTORY = [
+            { id: 101, equipId: 'XT-2034', issue: 'Hỏng bơm dầu', solution: 'Thay thế bơm dầu mới chính hãng', date: '2024-02-15', technician: 'Nguyễn Văn A' },
+            { id: 102, equipId: 'TL-99', issue: 'Mất nguồn màn hình', solution: 'Sửa mạch nguồn, thay tụ điện', date: '2024-01-20', technician: 'Trần Văn B' },
+            { id: 103, equipId: 'XT-556', issue: 'Tiếng động lạ ở xích', solution: 'Bôi trơn và căn chỉnh lại mắt xích', date: '2024-02-28', technician: 'Lê Văn C' }
+        ];
+
+        // --- Helper Components ---
+        const StatusBadge = ({ status }) => {
+            const styles = {
+                'Hoạt động': 'bg-green-100 text-green-700 border-green-200',
+                'Cần bảo dưỡng': 'bg-orange-100 text-orange-700 border-orange-200',
+                'Đang sửa': 'bg-red-100 text-red-700 border-red-200',
+                'Quá hạn': 'bg-red-100 text-red-700 border-red-200',
+                'Sắp tới': 'bg-blue-100 text-blue-700 border-blue-200',
+                'Đang thực hiện': 'bg-purple-100 text-purple-700 border-purple-200',
+                'Khẩn cấp': 'bg-rose-100 text-rose-700 border-rose-200',
+                'Cao': 'bg-orange-100 text-orange-700 border-orange-200',
+                'Trung bình': 'bg-amber-100 text-amber-700 border-amber-200',
+                'Thấp': 'bg-slate-100 text-slate-700 border-slate-200'
+            };
+            return (
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${styles[status] || 'bg-slate-100 text-slate-700'}`}>
+                    {status.toUpperCase()}
+                </span>
+            );
+        };
+
+        const Card = ({ title, icon, children, extra }) => (
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <i data-lucide={icon} className="w-5 h-5 text-blue-600"></i>
+                        <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">{title}</h3>
+                    </div>
+                    {extra}
+                </div>
+                <div className="p-5">{children}</div>
+            </div>
+        );
+
+        // --- Main App Component ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+            const [searchQuery, setSearchQuery] = useState('');
+
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [activeTab, isSidebarOpen]);
+
+            // --- Tab Views ---
+            const DashboardView = () => (
+                <div className="space-y-6 animate-fade-in">
+                    {/* Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[
+                            { label: 'Tổng trang bị', value: 142, icon: 'package', color: 'text-blue-600', bg: 'bg-blue-50' },
+                            { label: 'Đang hoạt động', value: 120, icon: 'check-circle', color: 'text-green-600', bg: 'bg-green-50' },
+                            { label: 'Cần bảo dưỡng', value: 15, icon: 'wrench', color: 'text-orange-600', bg: 'bg-orange-50' },
+                            { label: 'Đang sửa chữa', value: 7, icon: 'alert-octagon', color: 'text-red-600', bg: 'bg-red-50' }
+                        ].map((stat, i) => (
+                            <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div className={`p-3 rounded-lg ${stat.bg} ${stat.color}`}>
+                                    <i data-lucide={stat.icon} className="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-tighter">{stat.label}</p>
+                                    <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Maintenance Chart / Progress */}
+                        <Card title="Sức khỏe hệ thống" icon="activity" className="lg:col-span-1">
+                            <div className="space-y-6">
+                                {[
+                                    { label: 'Xe vận tải', p: 85, color: 'bg-green-500' },
+                                    { label: 'Máy phát điện', p: 60, color: 'bg-orange-500' },
+                                    { label: 'Thiết bị Radar', p: 92, color: 'bg-blue-500' },
+                                    { label: 'Vô tuyến điện', p: 78, color: 'bg-emerald-500' }
+                                ].map((item, i) => (
+                                    <div key={i}>
+                                        <div className="flex justify-between text-xs font-bold mb-1.5 text-slate-600">
+                                            <span>{item.label}</span>
+                                            <span>{item.p}%</span>
+                                        </div>
+                                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div className={`h-full ${item.color}`} style={{ width: `${item.p}%` }}></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+
+                        {/* Recent Maintenance */}
+                        <div className="lg:col-span-2">
+                            <Card title="Lịch bảo dưỡng khẩn cấp" icon="calendar-days" extra={<button className="text-[10px] text-blue-600 font-bold hover:underline">XEM TẤT CẢ</button>}>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="text-[10px] font-bold text-slate-400 uppercase border-b border-slate-100">
+                                                <th className="pb-3 px-2">Trang bị</th>
+                                                <th className="pb-3 px-2">Nhiệm vụ</th>
+                                                <th className="pb-3 px-2">Hạn định</th>
+                                                <th className="pb-3 px-2 text-right">Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-50">
+                                            {INITIAL_SCHEDULE.slice(0, 4).map(s => (
+                                                <tr key={s.id} className="text-sm">
+                                                    <td className="py-3 px-2 font-semibold text-slate-700">{s.equipId}</td>
+                                                    <td className="py-3 px-2 text-slate-500">{s.task}</td>
+                                                    <td className="py-3 px-2 text-slate-500">{s.date}</td>
+                                                    <td className="py-3 px-2 text-right"><StatusBadge status={s.status} /></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const EquipmentView = () => {
+                const filtered = INITIAL_EQUIPMENTS.filter(e => 
+                    e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    e.id.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+
+                return (
+                    <div className="space-y-4 animate-fade-in">
+                        <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+                            <div className="relative w-full md:w-96">
+                                <i data-lucide="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                                <input 
+                                    type="text" 
+                                    placeholder="Tìm theo tên hoặc số hiệu..." 
+                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-200">
+                                    <i data-lucide="filter" className="w-4 h-4"></i> Lọc
+                                </button>
+                                <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow-md">
+                                    <i data-lucide="plus" className="w-4 h-4"></i> Thêm mới
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left">
+                                    <thead className="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-200">
+                                        <tr>
+                                            <th className="px-6 py-4">Số hiệu</th>
+                                            <th className="px-6 py-4">Tên trang bị</th>
+                                            <th className="px-6 py-4">Đơn vị</th>
+                                            <th className="px-6 py-4">Sức khỏe</th>
+                                            <th className="px-6 py-4 text-center">Trạng thái</th>
+                                            <th className="px-6 py-4"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {filtered.map(e => (
+                                            <tr key={e.id} className="hover:bg-slate-50 transition-colors">
+                                                <td className="px-6 py-4 font-mono text-xs font-bold text-blue-600">{e.id}</td>
+                                                <td className="px-6 py-4">
+                                                    <p className="font-bold text-slate-800 text-sm">{e.name}</p>
+                                                    <p className="text-[10px] text-slate-400">{e.type}</p>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-slate-600">{e.unit}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full w-16">
+                                                            <div className={`h-full rounded-full ${e.health > 80 ? 'bg-green-500' : e.health > 50 ? 'bg-orange-500' : 'bg-red-500'}`} style={{width: `${e.health}%`}}></div>
+                                                        </div>
+                                                        <span className="text-[10px] font-bold text-slate-400">{e.health}%</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-center"><StatusBadge status={e.status} /></td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button className="p-1.5 hover:bg-slate-200 rounded-md text-slate-400">
+                                                        <i data-lucide="more-vertical" className="w-4 h-4"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const HistoryView = () => (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="grid grid-cols-1 gap-4">
+                        {REPAIR_HISTORY.map(h => (
+                            <div key={h.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden group">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div className="flex-shrink-0 flex flex-col items-center justify-center p-3 bg-slate-50 rounded-lg w-24">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase">{h.date.split('-')[1]} - {h.date.split('-')[0]}</span>
+                                    <span className="text-xl font-black text-slate-800 tracking-tighter">{h.date.split('-')[2]}</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-xs font-mono bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold">{h.equipId}</span>
+                                        <h4 className="font-bold text-slate-800 underline decoration-blue-200 underline-offset-4">Sửa chữa nội dung: {h.issue}</h4>
+                                    </div>
+                                    <p className="text-sm text-slate-500 mt-2 flex items-center gap-1.5">
+                                        <i data-lucide="check-circle-2" className="w-4 h-4 text-green-500"></i>
+                                        <strong>Giải pháp:</strong> {h.solution}
+                                    </p>
+                                </div>
+                                <div className="md:text-right">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kỹ thuật viên</p>
+                                    <p className="text-sm font-bold text-slate-700">{h.technician}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen flex text-slate-800">
+                    {/* Sidebar */}
+                    <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-slate-900 text-white transition-all-300 flex flex-col fixed h-full z-30 shadow-2xl`}>
+                        <div className="p-6 flex items-center gap-3 border-b border-slate-800 mb-4">
+                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 flex-shrink-0">
+                                <i data-lucide="shield-check" className="w-6 h-6 text-white"></i>
+                            </div>
+                            {isSidebarOpen && <span className="font-black text-xl tracking-tighter italic">V-TECHNICAL</span>}
+                        </div>
+
+                        <nav className="flex-1 px-3 space-y-1">
+                            {[
+                                { id: 'dashboard', icon: 'layout-dashboard', label: 'Bảng điều khiển' },
+                                { id: 'equipment', icon: 'package', label: 'Quản lý trang bị' },
+                                { id: 'schedule', icon: 'calendar-check', label: 'Lịch bảo dưỡng' },
+                                { id: 'history', icon: 'history', label: 'Lịch sử sửa chữa' },
+                                { id: 'reports', icon: 'bar-chart-3', label: 'Báo cáo thống kê' }
+                            ].map(item => (
+                                <button 
+                                    key={item.id}
+                                    onClick={() => setActiveTab(item.id)}
+                                    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all ${activeTab === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 translate-x-1' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <i data-lucide={item.icon} className="w-5 h-5"></i>
+                                    {isSidebarOpen && <span className="font-bold text-sm">{item.label}</span>}
+                                </button>
+                            ))}
+                        </nav>
+
+                        <div className="p-4 bg-slate-800/50 m-3 rounded-2xl border border-slate-700/50">
+                            {isSidebarOpen ? (
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase">
+                                        <span>Dung lượng lưu trữ</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                                        <div className="h-full bg-blue-500 w-3/4"></div>
+                                    </div>
+                                    <button className="w-full py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-colors">Nâng cấp</button>
+                                </div>
+                            ) : (
+                                <div className="text-center text-blue-400 font-bold text-xs uppercase">75%</div>
+                            )}
+                        </div>
+                    </aside>
+
+                    {/* Main Content Area */}
+                    <main className={`flex-1 transition-all-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+                        {/* Header */}
+                        <header className="h-20 bg-white/80 border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20 glass-effect">
+                            <div className="flex items-center gap-6">
+                                <button 
+                                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                                    className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-500"
+                                >
+                                    <i data-lucide={isSidebarOpen ? "chevron-left" : "menu"} className="w-6 h-6"></i>
+                                </button>
+                                <div>
+                                    <h2 className="text-xl font-black text-slate-900 tracking-tight">
+                                        {activeTab === 'dashboard' && 'TỔNG QUAN HỆ THỐNG'}
+                                        {activeTab === 'equipment' && 'DANH MỤC TRANG BỊ KỸ THUẬT'}
+                                        {activeTab === 'schedule' && 'KẾ HOẠCH BẢO DƯỠNG'}
+                                        {activeTab === 'history' && 'NHẬT KÝ SỬA CHỮA'}
+                                    </h2>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                        Cập nhật lần cuối: Hôm nay, 14:30 <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-5">
+                                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-700 rounded-full border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors">
+                                    <i data-lucide="flame" className="w-4 h-4"></i>
+                                    <span className="text-[10px] font-bold uppercase">3 Quá hạn</span>
+                                </div>
+                                <button className="p-2.5 text-slate-400 hover:bg-slate-100 rounded-full relative transition-colors">
+                                    <i data-lucide="bell" className="w-5 h-5"></i>
+                                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                                </button>
+                                <div className="flex items-center gap-3 pl-5 border-l border-slate-200">
+                                    <div className="text-right hidden md:block">
+                                        <p className="text-xs font-black text-slate-800 leading-none mb-0.5">Admin Nguyễn Hùng</p>
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Trưởng ban Kỹ thuật</p>
+                                    </div>
+                                    <div className="w-11 h-11 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-200 overflow-hidden border-2 border-white">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=b6e3f4" alt="AVT" />
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Page Content */}
+                        <div className="p-8">
+                            {activeTab === 'dashboard' && <DashboardView />}
+                            {activeTab === 'equipment' && <EquipmentView />}
+                            {activeTab === 'history' && <HistoryView />}
+                            
+                            {(activeTab === 'schedule' || activeTab === 'reports') && (
+                                <div className="bg-white p-20 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center">
+                                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                                        <i data-lucide="hourglass" className="w-10 h-10 text-slate-300 animate-spin-slow"></i>
+                                    </div>
+                                    <h3 className="text-xl font-black text-slate-800 mb-2 uppercase italic">Đang tải dữ liệu...</h3>
+                                    <p className="text-sm text-slate-400 max-w-sm">Dữ liệu phân hệ <strong>{activeTab.toUpperCase()}</strong> đang được đồng bộ từ máy chủ trung tâm. Vui lòng quay lại sau ít phút.</p>
+                                    <button onClick={() => setActiveTab('dashboard')} className="mt-8 px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-blue-600 transition-colors">QUAY LẠI TỔNG QUAN</button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <footer className="px-8 py-6 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center text-slate-400">
+                            <p className="text-[10px] font-bold uppercase tracking-widest">© 2024 V-TECHNICAL MAINTENANCE SYSTEM. ALL RIGHTS RESERVED.</p>
+                            <div className="flex gap-6 mt-4 md:mt-0">
+                                <a href="#" className="text-[10px] font-bold uppercase hover:text-blue-600 transition-colors">Điều khoản</a>
+                                <a href="#" className="text-[10px] font-bold uppercase hover:text-blue-600 transition-colors">Hỗ trợ kỹ thuật</a>
+                                <a href="#" className="text-[10px] font-bold uppercase hover:text-blue-600 transition-colors">Phiên bản 2.5.0</a>
+                            </div>
+                        </footer>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <style>
+        .animate-spin-slow { animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</body>
+</html>
